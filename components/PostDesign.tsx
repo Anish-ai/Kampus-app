@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { useAuth } from '../app/context/auth';
 
 type PostDesignProps = {
     initialLikes: number;
@@ -12,6 +13,7 @@ type PostDesignProps = {
 const PostDesign: React.FC<PostDesignProps> = ({ initialLikes, caption, image, comments }) => {
     const [likes, setLikes] = useState(initialLikes);
     const [isLiked, setIsLiked] = useState(false);
+    const { user } = useAuth();
 
     const handleLikePress = () => {
         if (isLiked) {
@@ -27,7 +29,7 @@ const PostDesign: React.FC<PostDesignProps> = ({ initialLikes, caption, image, c
             {/* Post Header */}
             <View style={styles.postHeader}>
                 <Ionicons name="person-circle-outline" size={34} color="white" />
-                <Text style={styles.username}>User</Text>
+                <Text style={styles.username}>{user?.uname}</Text>
                 <MaterialIcons name="more-vert" size={24} color="white" style={styles.moreIcon} />
             </View>
 

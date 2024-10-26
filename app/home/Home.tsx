@@ -178,10 +178,9 @@ const Home = () => {
         <Image source={require('../../assets/images/Kampus.png')} style={styles.kampus} />
         <View style={styles.headerIcons}>
           <Ionicons name="scan-outline" size={30} color="grey" />
-          {/* <Link href="#">
+          <Link href = "/profile/Profile">
             <Ionicons name="person-circle-outline" size={32} color="grey" style={{ marginLeft: 20 }} />
-          </Link> */}
-          <Ionicons name="person-circle-outline" size={32} color="grey" style={{ marginLeft: 20 }} />
+          </Link>
         </View>
       </View>
 

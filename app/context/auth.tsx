@@ -1,4 +1,3 @@
-// app/context/auth.tsx
 import { createContext, useContext, useEffect, useState } from 'react';
 import { 
   createUserWithEmailAndPassword, 
@@ -7,19 +6,27 @@ import {
   onAuthStateChanged,
   User as FirebaseUser 
 } from 'firebase/auth';
-import { auth, saveUserToStorage, getUserFromStorage } from '../../firebaseConfig';
+import { 
+  auth, 
+  saveUserToStorage, 
+  getUserFromStorage,
+  saveUserToFirestore,
+  getUserFromFirestore 
+} from '../../firebaseConfig';
 
 // Define the shape of our user object
 interface UserData {
   uid: string;
   email: string | null;
+  username?: string;
+  uname?: string;
 }
 
 // Define the shape of our context
 interface AuthContextType {
   user: UserData | null;
   loading: boolean;
-  signup: (email: string, password: string) => Promise<FirebaseUser>;
+  signup: (email: string, password: string, username: string, uname: string) => Promise<FirebaseUser>;
   login: (email: string, password: string) => Promise<FirebaseUser>;
   logout: () => Promise<void>;
 }
@@ -49,11 +56,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Subscribe to auth state changes
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        // Store minimal user data
+        // Get additional user data from Firestore
+        const firestoreData = await getUserFromFirestore(firebaseUser.uid);
+        
+        // Store complete user data
         const userData: UserData = {
           uid: firebaseUser.uid,
           email: firebaseUser.email,
+          username: firestoreData?.username,
+          uname: firestoreData?.uname
         };
+        
         setUser(userData);
         await saveUserToStorage(userData);
       } else {
@@ -66,30 +79,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return unsubscribe;
   }, []);
 
-  const signup = async (email: string, password: string) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      return userCredential.user;
-    } catch (error) {
-      throw error;
-    }
+  const signup = async (email: string, password: string, username: string, uname: string) => {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    
+    // Save additional user data to Firestore
+    await saveUserToFirestore(userCredential.user.uid, {
+      uname,
+      username,
+      email
+    });
+
+    return userCredential.user;
   };
 
   const login = async (email: string, password: string) => {
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      return userCredential.user;
-    } catch (error) {
-      throw error;
-    }
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    return userCredential.user;
   };
 
   const logout = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      throw error;
-    }
+    await signOut(auth);
   };
 
   return (

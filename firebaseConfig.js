@@ -1,9 +1,17 @@
-// app/firebaseConfig.js
 import { initializeApp } from 'firebase/app';
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import { 
+    getFirestore, 
+    doc, 
+    setDoc, 
+    getDoc, 
+    collection, 
+    query, 
+    where, 
+    getDocs 
+} from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Replace this with your Firebase config object
 const firebaseConfig = {
     apiKey: "AIzaSyAILLBqYxvNwnzDCegPkjKpZ97-svAwZTM",
     authDomain: "kampus-eb395.firebaseapp.com",
@@ -21,6 +29,48 @@ const app = initializeApp(firebaseConfig);
 export const auth = initializeAuth(app, {
     persistence: getReactNativePersistence(AsyncStorage)
 });
+
+// Initialize Firestore
+export const db = getFirestore(app);
+
+// Helper function to save user data to Firestore
+export const saveUserToFirestore = async (uid, userData) => {
+    try {
+        await setDoc(doc(db, 'users', uid), {
+            uname: userData.uname,
+            username: userData.username,
+            email: userData.email,
+            createdAt: new Date().toISOString(),
+        });
+    } catch (error) {
+        console.error('Error saving user to Firestore:', error);
+        throw error;
+    }
+};
+
+// Helper function to check if username exists
+export const checkUsernameExists = async (username) => {
+    try {
+        const usersRef = collection(db, 'users');
+        const q = query(usersRef, where('username', '==', username));
+        const snapshot = await getDocs(q);
+        return !snapshot.empty;
+    } catch (error) {
+        console.error('Error checking username:', error);
+        throw error;
+    }
+};
+
+// Helper function to get user data from Firestore
+export const getUserFromFirestore = async (uid) => {
+    try {
+        const userDoc = await getDoc(doc(db, 'users', uid));
+        return userDoc.exists() ? userDoc.data() : null;
+    } catch (error) {
+        console.error('Error getting user from Firestore:', error);
+        throw error;
+    }
+};
 
 // Helper function to persist additional user data if needed
 export const saveUserToStorage = async (user) => {
@@ -41,3 +91,5 @@ export const getUserFromStorage = async () => {
         return null;
     }
 };
+
+// export type { FirebaseApp }; // This line is TypeScript-specific and should be removed in JavaScript files.

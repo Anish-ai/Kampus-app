@@ -14,7 +14,8 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    'Jaldi-Bold': require('../assets/fonts/Jaldi-Bold.ttf'),
+    'Jaldi-Regular': require('../assets/fonts/Jaldi-Regular.ttf'),
   });
 
   useEffect(() => {
@@ -34,6 +35,7 @@ export default function RootLayout() {
           <Stack.Screen name="index" />
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="home" options={{ headerShown: false }} />
+          <Stack.Screen name="profile" options={{ headerShown: false }} />
         </Stack>
       </ThemeProvider>
     </AuthProvider>
