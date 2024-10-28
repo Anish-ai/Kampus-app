@@ -3,10 +3,6 @@ import { Link } from 'expo-router';
 import React from 'react';
 import { StyleSheet, View, Text, Image, Button, TouchableOpacity, ScrollView } from 'react-native';
 import { useAuth } from '../context/auth';
-
-// Define default image URLs
-const defaultProfileImage = 'https://static-00.iconduck.com/assets.00/user-icon-1024x1024-dtzturco.png';
-const defaultHeaderImage = 'https://www.nationalflags.shop/WebRoot/vilkasfi01/Shops/2014080403/53F0/F886/BB3A/522C/CB5B/0A28/100A/2578/blue_rectangle.jpg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Profile() {
@@ -16,7 +12,7 @@ export default function Profile() {
         <ScrollView style={styles.container}>
             {/* Profile Section */}
             <View style={styles.header}>
-            <Image source={{ uri: user?.headerImageUrl || defaultHeaderImage }} style={styles.headerImage} />
+                <Image source={require('../../assets/images/jatin.png')} style={styles.headerImage} />
                 <View style={styles.headerIcons}>
                     <Ionicons name="information-circle" size={25} color="#fff" />
                     <Link href="/profile/Settings">
@@ -27,7 +23,7 @@ export default function Profile() {
             </View>
             <View style={styles.profileContainer}>
                 <View style={styles.profileImageContainer}>
-                <Image source={{ uri: user?.profileImageUrl || defaultProfileImage }} style={styles.profileImage} />
+                    <Image source={require('../../assets/images/Jatinini.png')} style={styles.profileImage} />
                     {/* <Ionicons name="person-circle" size={100} color="#fff" style={styles.profileImage}/> */}
                 </View>
                 <Text style={styles.profileName}>{user?.uname}</Text>
