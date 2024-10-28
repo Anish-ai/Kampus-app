@@ -10,6 +10,7 @@ import {
     where, 
     getDocs 
 } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';  // Add this import
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const firebaseConfig = {
@@ -32,6 +33,9 @@ export const auth = initializeAuth(app, {
 
 // Initialize Firestore
 export const db = getFirestore(app);
+
+// Initialize Storage
+export const storage = getStorage(app);  // Add this line
 
 // Helper function to save user data to Firestore
 export const saveUserToFirestore = async (uid, userData) => {
@@ -91,5 +95,3 @@ export const getUserFromStorage = async () => {
         return null;
     }
 };
-
-// export type { FirebaseApp }; // This line is TypeScript-specific and should be removed in JavaScript files.

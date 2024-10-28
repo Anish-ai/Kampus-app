@@ -20,6 +20,8 @@ interface UserData {
   email: string | null;
   username?: string;
   uname?: string;
+  profileImageUrl?: string;
+  headerImageUrl?: string;
 }
 
 // Define the shape of our context

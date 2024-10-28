@@ -1,30 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet, SafeAreaView, Modal, Animated, Easing, TouchableWithoutFeedback } from 'react-native';
 import PostDesign from '../../components/PostDesign';
 import AddPost from '../../components/AddPost';
-import { Ionicons } from '@expo/vector-icons'; // For plus icon
+import { Ionicons } from '@expo/vector-icons';
+import { subscribeToPosts, Post, createPost } from '../../types/posts';
+import { useAuth } from '../../app/context/auth';
 
 const News = () => {
-  const [posts, setPosts] = useState([
-    { id: '1', likes: 600, caption: 'A beautiful day!', image: 'https://images.unsplash.com/photo-1414609245224-afa02bfb3fda?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxleHBsb3JlLWZlZWR8MTZ8fHxlbnwwfHx8fHw%3D', comments: 12 },
-    { id: '2', likes: 1200, caption: 'Your runtime has been disconnected...', image: 'https://cdn.pixabay.com/photo/2016/09/07/11/37/sunset-1651426_640.jpg', comments: 45 },
-  ]);
-
+  const [posts, setPosts] = useState<Post[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const slideAnim = useState(new Animated.Value(300))[0]; // 300 is the height of the modal
+  const slideAnim = useState(new Animated.Value(300))[0];
+  const { user } = useAuth();
 
-  const handleAddPost = (newPost: { id: string; likes: number; caption: string; image: string | null; comments: number }) => {
-    const postWithDefaultImage = {
-      ...newPost,
-      image: newPost.image || '',
-    };
-    setPosts((currentPosts) => [postWithDefaultImage, ...currentPosts]);
+  useEffect(() => {
+    // Subscribe to real-time post updates
+    const unsubscribe = subscribeToPosts((updatedPosts) => {
+      setPosts(updatedPosts);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
+
+  const handleAddPost = async (newPost: { caption: string; image: string | null }) => {
+    try {
+      if (!user) return;
+      const postData = {
+        userId: user.uid,
+        uname: user.uname || 'Anonymous',
+        caption: newPost.caption,
+        imageUrl: newPost.image || '',
+        likes: 0,
+        comments: 0,
+        likedBy: [],
+        createdAt: new Date()
+      };
+      
+      await createPost(
+        user.uid,
+        user.uname || 'Anonymous',
+        newPost.caption,
+        newPost.image
+      );
+      closeModal();
+    } catch (error) {
+      console.error('Error adding post:', error);
+      // Handle error (show error message to user)
+    }
   };
 
   const openModal = () => {
     setModalVisible(true);
     Animated.timing(slideAnim, {
-      toValue: 0, // Moves the modal up to its position (0 means bottom-aligned)
+      toValue: 0,
       duration: 300,
       easing: Easing.ease,
       useNativeDriver: true,
@@ -33,42 +61,36 @@ const News = () => {
 
   const closeModal = () => {
     Animated.timing(slideAnim, {
-      toValue: 300, // Moves the modal back down (300 is the height of the modal)
+      toValue: 300,
       duration: 300,
       easing: Easing.ease,
       useNativeDriver: true,
-    }).start(() => setModalVisible(false)); // Close modal after animation completes
+    }).start(() => setModalVisible(false));
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Post list */}
       <FlatList
         data={posts}
         renderItem={({ item }) => (
           <PostDesign
-            initialLikes={item.likes}
-            caption={item.caption}
-            image={item.image}
-            comments={item.comments}
+            post={item}
+            userId={user?.uid || ''}
           />
         )}
         keyExtractor={(item) => item.id}
       />
 
-      {/* Plus Button */}
       <View style={styles.addButtonContainer}>
         <Ionicons name="add" size={40} color="white" onPress={openModal} />
       </View>
 
-      {/* Add Post Modal */}
       <Modal
         transparent={true}
-        animationType="none" // Disable default animation
+        animationType="none"
         visible={modalVisible}
         onRequestClose={closeModal}
       >
-        {/* Touchable background overlay to close modal */}
         <TouchableWithoutFeedback onPress={closeModal}>
           <View style={styles.modalOverlay} />
         </TouchableWithoutFeedback>

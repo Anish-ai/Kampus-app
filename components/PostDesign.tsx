@@ -1,68 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { useAuth } from '../app/context/auth';
+import { toggleLike, hasUserLikedPost, Post } from '../types/posts';
 
-type PostDesignProps = {
-    initialLikes: number;
-    caption: string;
-    image: string;
-    comments: number;
-};
+interface PostDesignProps {
+    post: Post;
+    userId: string;
+}
 
-const PostDesign: React.FC<PostDesignProps> = ({ initialLikes, caption, image, comments }) => {
-    const [likes, setLikes] = useState(initialLikes);
+const PostDesign: React.FC<PostDesignProps> = ({ post, userId }) => {
     const [isLiked, setIsLiked] = useState(false);
-    const { user } = useAuth();
 
-    const handleLikePress = () => {
-        if (isLiked) {
-            setLikes(likes - 1); // Decrease likes if already liked
-        } else {
-            setLikes(likes + 1); // Increase likes if not liked
+    useEffect(() => {
+        setIsLiked(hasUserLikedPost(post, userId));
+    }, [post, userId]);
+
+    const handleLikePress = async () => {
+        try {
+            await toggleLike(post.id, userId);
+        } catch (error) {
+            console.error('Error toggling like:', error);
+            // Handle error (show error message to user)
         }
-        setIsLiked(!isLiked); // Toggle like state
     };
 
     return (
         <View style={styles.post}>
-            {/* Post Header */}
             <View style={styles.postHeader}>
                 <Ionicons name="person-circle-outline" size={34} color="white" />
-                <Text style={styles.username}>{user?.uname}</Text>
+                <Text style={styles.username}>{post.uname}</Text>
                 <MaterialIcons name="more-vert" size={24} color="white" style={styles.moreIcon} />
             </View>
 
             <View style={styles.postBorder}>
-                {/* Post Image */}
-                {image ? (
+                {post.imageUrl ? (
                     <View style={styles.ImageContainer}>
-                        <Image source={{ uri: image }} style={styles.postImage} />
+                        <Image source={{ uri: post.imageUrl }} style={styles.postImage} />
                     </View>
                 ) : (
                     <Text style={styles.noImageText}>No Image</Text>
                 )}
 
-                {/* Post Content */}
-                <Text style={styles.postContent}>{caption}</Text>
+                <Text style={styles.postContent}>{post.caption}</Text>
 
-                {/* Post Actions */}
                 <View style={styles.postActions}>
                     <TouchableOpacity onPress={handleLikePress}>
                         <Text style={styles.actionText}>
-                            {isLiked ? '❤️' : '🤍'} {likes}
+                            {isLiked ? '❤' : '🤍'} {post.likes}
                         </Text>
                     </TouchableOpacity>
                     <Text style={styles.actionText}>
-                        💬 {comments}
+                        💬 {post.comments}
                     </Text>
                 </View>
-
-
             </View>
         </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     post: {
