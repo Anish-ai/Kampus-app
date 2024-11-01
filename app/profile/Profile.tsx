@@ -1,18 +1,95 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
-import React from 'react';
-import { StyleSheet, View, Text, Image, Button, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+    StyleSheet,
+    View,
+    Text,
+    Image,
+    TouchableOpacity,
+    ActivityIndicator,
+    Dimensions,
+    FlatList,
+    ListRenderItem
+} from 'react-native';
 import { useAuth } from '../context/auth';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ProfileService, Profile } from '../../types/profiles';
+import { auth, db } from '../../firebaseConfig';
+import { collection, getDocs } from 'firebase/firestore';
 
-export default function Profile() {
+const { width } = Dimensions.get('window');
+const numColumns = 3; // Number of columns for the grid
+
+export default function ProfileScreen() {
     const { user } = useAuth();
+    const [profile, setProfile] = useState<Profile | null>(null);
+    const [posts, setPosts] = useState<string[]>([]); // State to store fetched post images
+    const [loading, setLoading] = useState(true);
 
-    return (
-        <ScrollView style={styles.container}>
-            {/* Profile Section */}
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                setLoading(true);
+                const currentUser = auth.currentUser;
+                if (currentUser) {
+                    const fetchedProfile = await ProfileService.getProfile(currentUser.uid);
+                    setProfile(fetchedProfile);
+
+                    // Fetch posts based on post IDs
+                    if (fetchedProfile && fetchedProfile.postList) {
+                        const postImages: string[] = [];
+                        const postsCollection = collection(db, 'posts'); // Change 'posts' to your posts collection name
+                        const postsSnapshot = await getDocs(postsCollection);
+
+                        postsSnapshot.forEach((doc) => {
+                            const postData = doc.data();
+                            if (fetchedProfile.postList.includes(doc.id)) {
+                                postImages.push(postData.imageUrl); // Assuming imageUrl is the field for image
+                            }
+                        });
+
+                        setPosts(postImages);
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching profile or posts:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProfile();
+    }, []);
+
+    if (loading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#fff" />
+            </View>
+        );
+    }
+
+    const renderPost: ListRenderItem<string> = ({ item }) => (
+        <View style={styles.postContainer}>
+            <Image
+                source={{ uri: item }}
+                style={styles.postImage}
+            />
+        </View>
+    );
+
+    const ProfileHeader = () => (
+        <>
+            {/* Header Section */}
             <View style={styles.header}>
-                <Image source={require('../../assets/images/jatin.png')} style={styles.headerImage} />
+                <Image
+                    source={
+                        profile?.headerImageUrl
+                            ? { uri: profile.headerImageUrl }
+                            : require('../../assets/images/jatin.png')
+                    }
+                    style={styles.headerImage}
+                />
                 <View style={styles.headerIcons}>
                     <Ionicons name="information-circle" size={25} color="#fff" />
                     <Link href="/profile/Settings">
@@ -21,32 +98,65 @@ export default function Profile() {
                     <Ionicons name="share-social" size={25} color="#fff" />
                 </View>
             </View>
+
             <View style={styles.profileContainer}>
                 <View style={styles.profileImageContainer}>
-                    <Image source={require('../../assets/images/Jatinini.png')} style={styles.profileImage} />
-                    {/* <Ionicons name="person-circle" size={100} color="#fff" style={styles.profileImage}/> */}
+                    <Image
+                        source={
+                            profile?.profileImageUrl
+                                ? { uri: profile.profileImageUrl }
+                                : require('../../assets/images/Jatinini.png')
+                        }
+                        style={styles.profileImage}
+                    />
                 </View>
-                <Text style={styles.profileName}>{user?.uname}</Text>
-                <Text style={styles.profileHandle}>@{user?.username}</Text>
+
+                <Text style={styles.profileName}>{profile?.uname || user?.uname}</Text>
+                <Text style={styles.profileHandle}>@{profile?.username || user?.username}</Text>
+
                 <TouchableOpacity style={styles.editButton}>
-                    <Text style={styles.editButtonText}>Edit Profile</Text>
+                    <Link href="/profile/EditProfile">
+                        <Text style={styles.editButtonText}>Edit Profile</Text>
+                    </Link>
                 </TouchableOpacity>
-                <Text style={styles.friendsCount}>0 Friends</Text>
+
+                <Text style={styles.friendsCount}>
+                    {profile?.friends || 0} Friends
+                </Text>
+
                 <View style={styles.bioContainer}>
                     <Text style={styles.bioText}>
-                        Hi! I'm Jatinini. I have 0 friends because no one knows me 😔
+                        {profile?.bio || "No bio yet"}
                     </Text>
                 </View>
             </View>
 
-            {/* Posts Section */}
-            <View style={styles.postsContainer}>
-                <Text style={styles.PostText}>Posts</Text>
-                <View style={styles.postPlaceholder}>
-                    <Text style={styles.postPlaceholderText}>Why would I post when I have 0 friends. 😭</Text>
-                </View>
-            </View>
-        </ScrollView>
+            {/* Posts Section Header */}
+            <Text style={styles.PostText}>
+                Posts ({profile?.posts || 0})
+            </Text>
+        </>
+    );
+
+    const EmptyPostsComponent = () => (
+        <View style={styles.postPlaceholder}>
+            <Text style={styles.postPlaceholderText}>
+                No posts yet. Start sharing!
+            </Text>
+        </View>
+    );
+
+    return (
+        <FlatList
+            ListHeaderComponent={ProfileHeader}
+            data={posts} // Use the posts state instead
+            renderItem={renderPost}
+            keyExtractor={(item, index) => index.toString()}
+            numColumns={numColumns}
+            contentContainerStyle={styles.grid}
+            ListEmptyComponent={EmptyPostsComponent}
+            style={styles.container}
+        />
     );
 }
 
@@ -166,5 +276,28 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontFamily: 'Jaldi-Regular',
         fontSize: 18,
+    },
+    loadingContainer: {
+        flex: 1,
+        backgroundColor: 'black',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    postListContainer: {
+        width: '100%',
+        marginTop: 20,
+    },
+    grid: {
+        justifyContent: 'space-between',
+        paddingBottom: 10,
+    },
+    postContainer: {
+        width: width / numColumns - 10, // Adjust width based on number of columns
+        marginBottom: 10,
+    },
+    postImage: {
+        width: '100%',
+        height: 100, // Set a height for your images
+        borderRadius: 10,
     },
 });

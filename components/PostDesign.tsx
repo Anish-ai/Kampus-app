@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { toggleLike, hasUserLikedPost, Post } from '../types/posts';
+import { useAuth } from '../app/context/auth';
 
 interface PostDesignProps {
     post: Post;
@@ -9,6 +10,7 @@ interface PostDesignProps {
 }
 
 const PostDesign: React.FC<PostDesignProps> = ({ post, userId }) => {
+    const { user } = useAuth();
     const [isLiked, setIsLiked] = useState(false);
 
     useEffect(() => {
@@ -28,7 +30,7 @@ const PostDesign: React.FC<PostDesignProps> = ({ post, userId }) => {
         <View style={styles.post}>
             <View style={styles.postHeader}>
                 <Ionicons name="person-circle-outline" size={34} color="white" />
-                <Text style={styles.username}>{post.uname}</Text>
+                <Text style={styles.username}>{post?.username}</Text>
                 <MaterialIcons name="more-vert" size={24} color="white" style={styles.moreIcon} />
             </View>
 

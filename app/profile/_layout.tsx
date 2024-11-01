@@ -12,6 +12,9 @@ const ProfileLayout = () => {
         <Stack.Screen
           name="Settings"
         />
+        <Stack.Screen
+          name="EditProfile"
+        />
       </Stack>
       <StatusBar backgroundColor="#161622" style="light" />
     </>

@@ -8,15 +8,17 @@ import {
   orderBy,
   serverTimestamp,
   onSnapshot,
-  increment
+  increment,
+  arrayUnion
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../firebaseConfig';
+import {ProfileService} from './profiles'; // Adjust the path as necessary
 
 // Interface for Post data
 export interface Post {
   id: string;
-  uname: string;
+  username: string;
   userId: string;
   caption: string;
   imageUrl: string;
@@ -27,7 +29,7 @@ export interface Post {
 }
 
 // Function to create a new post
-export const createPost = async (userId: string, uname: string, caption: string, imageUri: string | null) => {
+export const createPost = async (userId: string, username: string, caption: string, imageUri: string | null) => {
   try {
       let imageUrl = '';
       if (imageUri) {
@@ -45,7 +47,7 @@ export const createPost = async (userId: string, uname: string, caption: string,
 
       const postData = {
           userId,
-          uname,
+          username,
           caption,
           imageUrl,
           likes: 0,
@@ -55,6 +57,17 @@ export const createPost = async (userId: string, uname: string, caption: string,
       };
 
       const docRef = await addDoc(collection(db, 'posts'), postData);
+
+      // Update user's profile postList with the new post ID
+      const userProfileRef = doc(db, 'profiles', userId);
+      await updateDoc(userProfileRef, {
+          postList: arrayUnion(docRef.id)
+      });
+      // Increment the post count in user's profile
+        await updateDoc(userProfileRef, {
+            posts: increment(1)
+        });
+      
       return { id: docRef.id, ...postData };
   } catch (error) {
       console.error('Error creating post:', error);
@@ -125,4 +138,22 @@ export const subscribeToPosts = (onUpdate: (posts: Post[]) => void) => {
 // Function to check if user has liked a post
 export const hasUserLikedPost = (post: Post, userId: string) => {
   return post.likedBy?.includes(userId) || false;
+};
+
+export const updateUsernameInPosts = async (userId: string, newUsername: string) => {
+    try {
+        // Step 1: Retrieve user's postList from profiles db
+        const profile = await ProfileService.getProfile(userId);
+        const postList = profile?.postList || [];
+
+        // Step 2: Update username in each post document in posts db
+        const updatePromises = postList.map((postId: string) =>
+            updateDoc(doc(db, 'posts', postId), { username: newUsername })
+        );
+        await Promise.all(updatePromises); // Execute all updates concurrently
+        console.log(`Username updated in ${postList.length} posts`);
+    } catch (error) {
+        console.error('Error updating username in posts:', error);
+        throw error;
+    }
 };
