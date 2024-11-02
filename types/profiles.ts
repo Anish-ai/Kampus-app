@@ -4,7 +4,8 @@ import {
     getDoc,
     updateDoc,
     serverTimestamp,
-    increment
+    increment,
+    onSnapshot
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../firebaseConfig';
@@ -62,41 +63,68 @@ export const ProfileService = {
         }
     },
 
-    //update uname in users collection
+    // Subscribe to real-time profile updates
+    subscribeToProfile(userId: string, onUpdate: (profile: Profile | null) => void) {
+        return onSnapshot(doc(db, 'profiles', userId), (doc) => {
+            if (doc.exists()) {
+                onUpdate(doc.data() as Profile);
+            } else {
+                onUpdate(null);
+            }
+        }, (error) => {
+            console.error('Error subscribing to profile:', error);
+            onUpdate(null);
+        });
+    },
+
+    //update uname in users collection and posts
     async updateUser(userId: string, uname: string): Promise<void> {
         try {
+            // Update in users collection
             const userRef = doc(db, 'users', userId);
             await updateDoc(userRef, { uname });
+            
+            // Update in profiles collection
+            const profileRef = doc(db, 'profiles', userId);
+            await updateDoc(profileRef, { uname });
         } catch (error) {
             console.error('Error updating user:', error);
             throw error;
         }
     },
 
-    //update username in users collection
+    //update username in users collection and posts
     async updateUsername(userId: string, username: string): Promise<void> {
         try {
+            // Update in users collection
             const userRef = doc(db, 'users', userId);
             await updateDoc(userRef, { username });
+            
+            // Update in profiles collection
+            const profileRef = doc(db, 'profiles', userId);
+            await updateDoc(profileRef, { username });
+
+            // Update username in all posts
+            await updateUsernameInPosts(userId, username);
+
+            // Update username in all comments
+            await updateUsernameInComments(userId, username);
         } catch (error) {
-            console.error('Error updating user:', error);
+            console.error('Error updating username:', error);
             throw error;
         }
     },
 
-    // Update the ProfileService to handle non-existent documents
+    // Update profile with real-time propagation
     async updateProfile(userId: string, updates: Partial<Profile>): Promise<void> {
         try {
             const profileRef = doc(db, 'profiles', userId);
-
-            // Check if the document exists
             const profileDoc = await getDoc(profileRef);
 
             if (!profileDoc.exists()) {
-                // If the document doesn't exist, create it with the updates
                 await setDoc(profileRef, {
                     userId,
-                    username: '', // Add default or existing values
+                    username: '',
                     uname: '',
                     bio: '',
                     headerImageUrl: '',
@@ -109,8 +137,13 @@ export const ProfileService = {
                     ...updates
                 });
             } else {
-                // If the document exists, update it
                 await updateDoc(profileRef, updates);
+
+                // If profile image is being updated, update it in all posts and comments
+                if (updates.profileImageUrl) {
+                    await updateProfileImageInPosts(userId, updates.profileImageUrl);
+                    await updateProfileImageInComments(userId, updates.profileImageUrl);
+                }
             }
         } catch (error) {
             console.error('Error updating profile:', error);
@@ -118,7 +151,7 @@ export const ProfileService = {
         }
     },
 
-    // Upload profile image (either header or profile)
+    // Upload profile image with real-time updates
     async uploadProfileImage(
         userId: string,
         imageUri: string,
@@ -150,7 +183,6 @@ export const ProfileService = {
         }
     },
 
-    // Increment post count when user creates a post
     async incrementPostCount(userId: string): Promise<void> {
         try {
             await updateDoc(doc(db, 'profiles', userId), {
@@ -162,3 +194,97 @@ export const ProfileService = {
         }
     }
 };
+
+// Helper function to update username in all posts
+async function updateUsernameInPosts(userId: string, newUsername: string) {
+    try {
+        const profile = await ProfileService.getProfile(userId);
+        if (!profile) return;
+
+        const postList = profile.postList || [];
+        const updatePromises = postList.map(postId =>
+            updateDoc(doc(db, 'posts', postId), { username: newUsername })
+        );
+        await Promise.all(updatePromises);
+    } catch (error) {
+        console.error('Error updating username in posts:', error);
+        throw error;
+    }
+}
+
+// Helper function to update username in all comments
+async function updateUsernameInComments(userId: string, newUsername: string) {
+    try {
+        const profile = await ProfileService.getProfile(userId);
+        if (!profile) return;
+
+        const postList = profile.postList || [];
+        
+        for (const postId of postList) {
+            const postRef = doc(db, 'posts', postId);
+            const postDoc = await getDoc(postRef);
+            
+            if (postDoc.exists()) {
+                const post = postDoc.data();
+                const updatedComments = post.commentList.map((comment: any) => {
+                    if (comment.userId === userId) {
+                        return { ...comment, username: newUsername };
+                    }
+                    return comment;
+                });
+                
+                await updateDoc(postRef, { commentList: updatedComments });
+            }
+        }
+    } catch (error) {
+        console.error('Error updating username in comments:', error);
+        throw error;
+    }
+}
+
+// Helper function to update profile image in all posts
+async function updateProfileImageInPosts(userId: string, newProfileImageUrl: string) {
+    try {
+        const profile = await ProfileService.getProfile(userId);
+        if (!profile) return;
+
+        const postList = profile.postList || [];
+        const updatePromises = postList.map(postId =>
+            updateDoc(doc(db, 'posts', postId), { profileImageUrl: newProfileImageUrl })
+        );
+        await Promise.all(updatePromises);
+    } catch (error) {
+        console.error('Error updating profile image in posts:', error);
+        throw error;
+    }
+}
+
+// Helper function to update profile image in all comments
+async function updateProfileImageInComments(userId: string, newProfileImageUrl: string) {
+    try {
+        const profile = await ProfileService.getProfile(userId);
+        if (!profile) return;
+
+        const postList = profile.postList || [];
+        
+        for (const postId of postList) {
+            const postRef = doc(db, 'posts', postId);
+            const postDoc = await getDoc(postRef);
+            
+            if (postDoc.exists()) {
+                const post = postDoc.data();
+                const updatedComments = post.commentList.map((comment: any) => {
+                    if (comment.userId === userId) {
+                        return { ...comment, profileImage: newProfileImageUrl };
+                    }
+                    return comment;
+                });
+                
+                await updateDoc(postRef, { commentList: updatedComments });
+            }
+        }
+    } catch (error) {
+        console.error('Error updating profile image in comments:', error);
+        throw error;
+    }
+}

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { toggleLike, hasUserLikedPost, Post } from '../types/posts';
 import { useAuth } from '../app/context/auth';
+import CommentSection from './CommentSection';
 
 interface PostDesignProps {
     post: Post;
@@ -12,6 +13,7 @@ interface PostDesignProps {
 const PostDesign: React.FC<PostDesignProps> = ({ post, userId }) => {
     const { user } = useAuth();
     const [isLiked, setIsLiked] = useState(false);
+    const [showComments, setShowComments] = useState(false);
 
     useEffect(() => {
         setIsLiked(hasUserLikedPost(post, userId));
@@ -24,6 +26,10 @@ const PostDesign: React.FC<PostDesignProps> = ({ post, userId }) => {
             console.error('Error toggling like:', error);
             // Handle error (show error message to user)
         }
+    };
+
+    const handleCommentPress = () => {
+        setShowComments(true);
     };
 
     return (
@@ -51,11 +57,24 @@ const PostDesign: React.FC<PostDesignProps> = ({ post, userId }) => {
                             {isLiked ? '❤' : '🤍'} {post.likes}
                         </Text>
                     </TouchableOpacity>
-                    <Text style={styles.actionText}>
-                        💬 {post.comments}
-                    </Text>
+                    <TouchableOpacity onPress={handleCommentPress}>
+                        <Text style={styles.actionText}>
+                            💬 {post.comments}
+                        </Text>
+                    </TouchableOpacity>
                 </View>
             </View>
+
+            <Modal
+                visible={showComments}
+                animationType="slide"
+                onRequestClose={() => setShowComments(false)}
+            >
+                <CommentSection
+                    postId={post.id}
+                    onClose={() => setShowComments(false)}
+                />
+            </Modal>
         </View>
     );
 };

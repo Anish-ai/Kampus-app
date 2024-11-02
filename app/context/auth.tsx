@@ -13,6 +13,7 @@ import {
   saveUserToFirestore,
   getUserFromFirestore 
 } from '../../firebaseConfig';
+import { ProfileService } from '../../types/profiles';
 
 // Define the shape of our user object
 interface UserData {
@@ -88,6 +89,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       username,
       email
     });
+
+    // Create user profile in profiles collection
+    await ProfileService.createProfile(userCredential.user.uid, username, uname);
 
     return userCredential.user;
   };
