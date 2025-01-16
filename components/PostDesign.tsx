@@ -1,3 +1,4 @@
+// components/PostDesign.tsx
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -24,7 +25,6 @@ const PostDesign: React.FC<PostDesignProps> = ({ post, userId }) => {
             await toggleLike(post.id, userId);
         } catch (error) {
             console.error('Error toggling like:', error);
-            // Handle error (show error message to user)
         }
     };
 
@@ -78,7 +78,6 @@ const PostDesign: React.FC<PostDesignProps> = ({ post, userId }) => {
         </View>
     );
 };
-
 
 const styles = StyleSheet.create({
     post: {

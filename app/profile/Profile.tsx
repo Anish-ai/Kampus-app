@@ -1,65 +1,60 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Link } from 'expo-router';
+// app/profile/ProfileScreen.tsx
 import React, { useState, useEffect } from 'react';
 import {
-    StyleSheet,
     View,
     Text,
     Image,
     TouchableOpacity,
+    StyleSheet,
     ActivityIndicator,
-    Dimensions,
     FlatList,
+    Dimensions,
     ListRenderItem
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/auth';
 import { ProfileService, Profile } from '../../types/profiles';
-import { auth, db } from '../../firebaseConfig';
+import { db } from '../../firebaseConfig';
 import { collection, getDocs } from 'firebase/firestore';
+import { Link } from 'expo-router';
 
 const { width } = Dimensions.get('window');
-const numColumns = 3; // Number of columns for the grid
+const numColumns = 3;
 
 export default function ProfileScreen() {
     const { user } = useAuth();
     const [profile, setProfile] = useState<Profile | null>(null);
-    const [posts, setPosts] = useState<string[]>([]); // State to store fetched post images
+    const [posts, setPosts] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchProfile = async () => {
-            try {
-                setLoading(true);
-                const currentUser = auth.currentUser;
-                if (currentUser) {
-                    const fetchedProfile = await ProfileService.getProfile(currentUser.uid);
-                    setProfile(fetchedProfile);
+            setLoading(true);
+            const currentUser = user;
+            if (currentUser) {
+                const fetchedProfile = await ProfileService.getProfile(currentUser.uid);
+                setProfile(fetchedProfile);
 
-                    // Fetch posts based on post IDs
-                    if (fetchedProfile && fetchedProfile.postList) {
-                        const postImages: string[] = [];
-                        const postsCollection = collection(db, 'posts'); // Change 'posts' to your posts collection name
-                        const postsSnapshot = await getDocs(postsCollection);
+                if (fetchedProfile && fetchedProfile.postList) {
+                    const postImages: string[] = [];
+                    const postsCollection = collection(db, 'posts');
+                    const postsSnapshot = await getDocs(postsCollection);
 
-                        postsSnapshot.forEach((doc) => {
-                            const postData = doc.data();
-                            if (fetchedProfile.postList.includes(doc.id)) {
-                                postImages.push(postData.imageUrl); // Assuming imageUrl is the field for image
-                            }
-                        });
+                    postsSnapshot.forEach((doc) => {
+                        const postData = doc.data();
+                        if (fetchedProfile.postList.includes(doc.id)) {
+                            postImages.push(postData.imageUrl);
+                        }
+                    });
 
-                        setPosts(postImages);
-                    }
+                    setPosts(postImages);
                 }
-            } catch (error) {
-                console.error('Error fetching profile or posts:', error);
-            } finally {
-                setLoading(false);
             }
+            setLoading(false);
         };
 
         fetchProfile();
-    }, []);
+    }, [user]);
 
     if (loading) {
         return (
@@ -71,16 +66,12 @@ export default function ProfileScreen() {
 
     const renderPost: ListRenderItem<string> = ({ item }) => (
         <View style={styles.postContainer}>
-            <Image
-                source={{ uri: item }}
-                style={styles.postImage}
-            />
+            <Image source={{ uri: item }} style={styles.postImage} />
         </View>
     );
 
     const ProfileHeader = () => (
         <>
-            {/* Header Section */}
             <View style={styles.header}>
                 <Image
                     source={
@@ -92,9 +83,7 @@ export default function ProfileScreen() {
                 />
                 <View style={styles.headerIcons}>
                     <Ionicons name="information-circle" size={25} color="#fff" />
-                    <Link href="/profile/Settings">
-                        <Ionicons name="settings" size={25} color="#fff" />
-                    </Link>
+                    <Ionicons name="settings" size={25} color="#fff" />
                     <Ionicons name="share-social" size={25} color="#fff" />
                 </View>
             </View>
@@ -131,7 +120,6 @@ export default function ProfileScreen() {
                 </View>
             </View>
 
-            {/* Posts Section Header */}
             <Text style={styles.PostText}>
                 Posts ({profile?.posts || 0})
             </Text>
@@ -149,7 +137,7 @@ export default function ProfileScreen() {
     return (
         <FlatList
             ListHeaderComponent={ProfileHeader}
-            data={posts} // Use the posts state instead
+            data={posts}
             renderItem={renderPost}
             keyExtractor={(item, index) => index.toString()}
             numColumns={numColumns}
@@ -163,141 +151,108 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#181818',
+        backgroundColor: '#1e1e1e',
     },
     header: {
-        height: 140,
-        backgroundColor: 'grey',
+        height: 200,
+        justifyContent: 'flex-end',
+        alignItems: 'center',
     },
     headerImage: {
         width: '100%',
         height: '100%',
         position: 'absolute',
-        zIndex: -1,
     },
     headerIcons: {
         flexDirection: 'row',
-        paddingHorizontal: 20,
-        marginTop: 10,
-        alignSelf: 'flex-end',
-        gap: 15,
+        justifyContent: 'space-between',
+        width: '100%',
+        padding: 16,
     },
     profileContainer: {
         alignItems: 'center',
         marginTop: -50,
     },
     profileImageContainer: {
-        borderWidth: 3,
-        borderColor: '#000',
-        borderRadius: 55,
-        overflow: 'hidden',
-        marginBottom: 10,
-        backgroundColor: '#3C3C3C',
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        backgroundColor: '#333',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     profileImage: {
         width: 100,
         height: 100,
+        borderRadius: 50,
     },
     profileName: {
-        color: '#fff',
-        fontSize: 30,
-        fontFamily: 'Jaldi-Bold',
-        marginBottom: -10,
+        color: 'white',
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginTop: 8,
     },
     profileHandle: {
         color: '#888',
-        fontSize: 20,
-        fontFamily: 'Jaldi-Regular',
+        fontSize: 16,
     },
     editButton: {
-        borderColor: '#0088CC',
-        borderWidth: 1.5,
-        borderRadius: 25,
-        paddingVertical: 4,
-        paddingHorizontal: 15,
-        marginTop: 10,
-        marginBottom: 10,
+        backgroundColor: '#007AFF',
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 20,
+        marginTop: 16,
     },
     editButtonText: {
-        color: '#fff',
-        fontFamily: 'Jaldi-Regular',
-        fontSize: 18,
+        color: 'white',
+        fontWeight: 'bold',
     },
     friendsCount: {
-        color: '#0088CC',
-        fontSize: 28,
-        marginVertical: 10,
-        fontFamily: 'Jaldi-Regular',
+        color: 'white',
+        fontSize: 16,
+        marginTop: 8,
     },
     bioContainer: {
-        width: '100%',
-        padding: 10,
-        borderColor: '#3C3C3C',
-        borderRadius: 10,
-        borderTopWidth: 0.5,
-        borderBottomWidth: 0.5,
+        padding: 16,
     },
     bioText: {
-        color: '#fff',
-        fontSize: 18,
-        fontFamily: 'Jaldi-Regular',
-        lineHeight: 25,
-    },
-    separatingLine: {
-        width: '100%',
-        height: 0.2,
-        backgroundColor: '#0088CC',
-        marginVertical: 10,
-        marginTop: 0,
-    },
-    postsContainer: {
-        flex: 1,
-        padding: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-
+        color: 'white',
+        textAlign: 'center',
     },
     PostText: {
-        color: '#fff',
-        fontSize: 30,
-        fontFamily: 'Jaldi-Bold',
-        alignSelf: 'flex-start',
-    },
-    postPlaceholder: {
-        width: '100%',
-        height: 200,
-        backgroundColor: '#333',
-        borderRadius: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    postPlaceholderText: {
-        color: '#fff',
-        textAlign: 'center',
-        fontFamily: 'Jaldi-Regular',
+        color: 'white',
         fontSize: 18,
-    },
-    loadingContainer: {
-        flex: 1,
-        backgroundColor: 'black',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    postListContainer: {
-        width: '100%',
-        marginTop: 20,
+        fontWeight: 'bold',
+        padding: 16,
     },
     grid: {
-        justifyContent: 'space-between',
-        paddingBottom: 10,
+        paddingHorizontal: 8,
     },
     postContainer: {
-        width: width / numColumns - 10, // Adjust width based on number of columns
-        marginBottom: 10,
+        width: (width - 16) / numColumns,
+        height: (width - 16) / numColumns,
+        margin: 4,
+        backgroundColor: '#333',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     postImage: {
         width: '100%',
-        height: 100, // Set a height for your images
-        borderRadius: 10,
+        height: '100%',
+    },
+    postPlaceholder: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 16,
+    },
+    postPlaceholderText: {
+        color: 'white',
+        fontSize: 16,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });

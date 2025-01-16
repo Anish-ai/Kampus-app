@@ -1,3 +1,4 @@
+// app/profile/EditProfileScreen.tsx
 import React, { useState, useEffect } from 'react';
 import {
     View,
@@ -8,12 +9,12 @@ import {
     StyleSheet,
     ScrollView,
     Alert,
-    ActivityIndicator  // Add this import
+    ActivityIndicator
 } from 'react-native';
 import { router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
-import { ProfileService } from '../../types/profiles';
+import { ProfileService, updateUsernameInComments } from '../../types/profiles';
 import { auth, db } from '../../firebaseConfig';
 import { UserService } from '../../types/UserService';
 import { doc, updateDoc } from 'firebase/firestore';
@@ -21,14 +22,11 @@ import { updateUsernameInPosts } from '../../types/posts';
 import { checkUsernameExists } from '../../firebaseConfig';
 
 const EditProfileScreen = () => {
-    // Existing state
     const [uname, setUname] = useState('');
     const [username, setUsername] = useState('');
     const [bio, setBio] = useState('');
     const [profileImage, setProfileImage] = useState<string | null>(null);
     const [headerImage, setHeaderImage] = useState<string | null>(null);
-
-    // Add new state for loading and errors
     const [isLoading, setIsLoading] = useState(false);
     const [isImageUploading, setIsImageUploading] = useState(false);
     const [errors, setErrors] = useState({
@@ -37,7 +35,6 @@ const EditProfileScreen = () => {
         bio: ''
     });
 
-    // Add form validation
     const validateForm = () => {
         let isValid = true;
         const newErrors = {
@@ -68,10 +65,9 @@ const EditProfileScreen = () => {
         return isValid;
     };
 
-    // Update existing useEffect
     useEffect(() => {
         const fetchProfile = async () => {
-            setIsLoading(true); // Add loading state
+            setIsLoading(true);
             const currentUser = auth.currentUser;
             if (currentUser) {
                 try {
@@ -86,7 +82,7 @@ const EditProfileScreen = () => {
                 } catch (error) {
                     Alert.alert('Error', 'Failed to fetch profile');
                 } finally {
-                    setIsLoading(false); // Clear loading state
+                    setIsLoading(false);
                 }
             }
         };
@@ -94,19 +90,15 @@ const EditProfileScreen = () => {
         fetchProfile();
     }, []);
 
-    // Update existing pickImage function
     const pickImage = async (type: 'profile' | 'header') => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
         if (status !== 'granted') {
-            Alert.alert(
-                'Permission Required',
-                'Please grant access to your photo library to upload images.'
-            );
+            Alert.alert('Permission Required', 'Please grant access to your photo library to upload images.');
             return;
         }
 
-        setIsImageUploading(true); // Add loading state
+        setIsImageUploading(true);
         try {
             let result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -132,46 +124,51 @@ const EditProfileScreen = () => {
         } catch (error) {
             Alert.alert('Upload Error', 'Failed to upload image');
         } finally {
-            setIsImageUploading(false); // Clear loading state
+            setIsImageUploading(false);
         }
     };
 
-    // Update existing handleSaveProfile function
-    const handleSaveProfile = async () => {
-        if (!auth.currentUser) return;
-        if (!validateForm()) return;
+    // app/profile/EditProfileScreen.tsx
+const handleSaveProfile = async () => {
+    if (!auth.currentUser) return;
+    if (!validateForm()) return;
+  
+    const usernameExists = await checkUsernameExists(username);
+    if (usernameExists) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        username: 'Username already exists',
+      }));
+      return;
+    }
+  
+    setIsLoading(true);
+    try {
+      // Update the profile
+      await ProfileService.updateProfile(auth.currentUser.uid, {
+        uname,
+        username,
+        bio,
+      });
+  
+      // Update the username in the users collection
+      await UserService.updateUser(auth.currentUser.uid, { uname, username });
+  
+      // Update the username in all posts
+      await updateUsernameInPosts(auth.currentUser.uid, username);
+  
+      // Update the username in all comments
+      await updateUsernameInComments(auth.currentUser.uid, username); // Add this line
+  
+      Alert.alert('Success', 'Profile updated successfully');
+      router.replace('/home');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to update profile');
+    } finally {
+      setIsLoading(false);
+    }
+};
 
-        // Check if username exists
-        const usernameExists = await checkUsernameExists(username);
-        if (usernameExists) {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                username: 'Username already exists'
-            }));
-            return;
-        }
-
-        setIsLoading(true); // Add loading state
-        try {
-            await ProfileService.updateProfile(auth.currentUser.uid, {
-                uname,
-                username,
-                bio
-            });
-            await UserService.updateUser(auth.currentUser.uid, { uname, username });
-
-            await updateUsernameInPosts(auth.currentUser.uid, username);
-
-            Alert.alert('Success', 'Profile updated successfully');
-            router.replace('/home');
-        } catch (error) {
-            Alert.alert('Error', 'Failed to update profile');
-        } finally {
-            setIsLoading(false); // Clear loading state
-        }
-    };
-
-    // Show loading screen while initial data is being fetched
     if (isLoading && !uname && !username) {
         return (
             <View style={styles.loadingContainer}>
@@ -182,11 +179,7 @@ const EditProfileScreen = () => {
 
     return (
         <ScrollView style={styles.container}>
-            {/* Header Image Section */}
-            <TouchableOpacity
-                onPress={() => pickImage('header')}
-                style={styles.headerImageContainer}
-            >
+            <TouchableOpacity onPress={() => pickImage('header')} style={styles.headerImageContainer}>
                 {headerImage ? (
                     <Image source={{ uri: headerImage }} style={styles.headerImage} />
                 ) : (
@@ -203,22 +196,14 @@ const EditProfileScreen = () => {
                 )}
             </TouchableOpacity>
 
-            {/* Profile Image Section */}
-            <TouchableOpacity
-                onPress={() => pickImage('profile')}
-                style={styles.profileImageContainer}
-            >
+            <TouchableOpacity onPress={() => pickImage('profile')} style={styles.profileImageContainer}>
                 {profileImage ? (
-                    <Image
-                        source={{ uri: profileImage }}
-                        style={styles.profileImage}
-                    />
+                    <Image source={{ uri: profileImage }} style={styles.profileImage} />
                 ) : (
                     <Ionicons name="person-circle-outline" size={100} color="white" />
                 )}
             </TouchableOpacity>
 
-            {/* Profile Details */}
             <View style={styles.detailsContainer}>
                 <Text style={styles.label}>Name</Text>
                 <TextInput
@@ -245,11 +230,7 @@ const EditProfileScreen = () => {
 
                 <Text style={styles.label}>Bio</Text>
                 <TextInput
-                    style={[
-                        styles.input,
-                        styles.bioInput,
-                        errors.bio ? styles.inputError : null
-                    ]}
+                    style={[styles.input, styles.bioInput, errors.bio ? styles.inputError : null]}
                     value={bio}
                     onChangeText={setBio}
                     placeholder="Tell us about yourself"
@@ -274,7 +255,6 @@ const EditProfileScreen = () => {
                 </TouchableOpacity>
             </View>
 
-            {/* Global loading overlay */}
             {isLoading && (
                 <View style={styles.loadingOverlay}>
                     <ActivityIndicator size="large" color="#007AFF" />
@@ -284,23 +264,20 @@ const EditProfileScreen = () => {
     );
 };
 
-// Update styles
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'black',
+        backgroundColor: '#1e1e1e',
     },
     headerImageContainer: {
         height: 200,
-        width: '100%',
-        backgroundColor: '#333',
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: '#333',
     },
     headerImage: {
         width: '100%',
         height: '100%',
-        resizeMode: 'cover',
     },
     placeholderHeader: {
         justifyContent: 'center',
@@ -308,50 +285,72 @@ const styles = StyleSheet.create({
     },
     placeholderText: {
         color: 'white',
-        marginTop: 10,
+        marginTop: 8,
+    },
+    uploadingOverlay: {
+        position: 'absolute',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        width: '100%',
+        height: '100%',
+    },
+    uploadingText: {
+        color: 'white',
+        marginTop: 8,
     },
     profileImageContainer: {
-        position: 'absolute',
-        top: 150,
-        left: 20,
-        zIndex: 10,
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        backgroundColor: '#333',
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'center',
+        marginTop: -50,
     },
     profileImage: {
         width: 100,
         height: 100,
         borderRadius: 50,
-        borderWidth: 3,
-        borderColor: 'white',
     },
     detailsContainer: {
-        marginTop: 70,
-        padding: 20,
+        padding: 16,
     },
     label: {
         color: 'white',
         fontSize: 16,
-        marginBottom: 5,
+        marginBottom: 8,
     },
     input: {
         backgroundColor: '#333',
         color: 'white',
-        padding: 10,
-        borderRadius: 10,
-        marginBottom: 15,
+        borderRadius: 8,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        marginBottom: 16,
+    },
+    inputError: {
+        borderColor: '#ff4444',
+        borderWidth: 1,
     },
     bioInput: {
         height: 100,
         textAlignVertical: 'top',
     },
+    errorText: {
+        color: '#ff4444',
+        marginBottom: 16,
+    },
     saveButton: {
         backgroundColor: '#007AFF',
-        padding: 15,
-        borderRadius: 10,
+        borderRadius: 8,
+        padding: 16,
+        justifyContent: 'center',
         alignItems: 'center',
     },
     saveButtonText: {
         color: 'white',
-        fontSize: 16,
         fontWeight: 'bold',
     },
     loadingContainer: {
@@ -360,29 +359,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     loadingOverlay: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(255,255,255,0.7)',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
         justifyContent: 'center',
         alignItems: 'center',
-    },
-    uploadingOverlay: {
-        ...StyleSheet.absoluteFillObject,
         backgroundColor: 'rgba(0,0,0,0.5)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    uploadingText: {
-        color: '#fff',
-        marginTop: 10,
-    },
-    errorText: {
-        color: 'red',
-        fontSize: 12,
-        marginTop: -12,
-        marginBottom: 8,
-    },
-    inputError: {
-        borderColor: 'red',
     },
 });
 

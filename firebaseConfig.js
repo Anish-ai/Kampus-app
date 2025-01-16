@@ -14,14 +14,14 @@ import { getStorage } from 'firebase/storage';  // Add this import
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAILLBqYxvNwnzDCegPkjKpZ97-svAwZTM",
-    authDomain: "kampus-eb395.firebaseapp.com",
-    projectId: "kampus-eb395",
-    storageBucket: "kampus-eb395.appspot.com",
-    messagingSenderId: "660924568883",
-    appId: "1:660924568883:web:d5a391b7873d39c8ff5a46",
-    measurementId: "G-4EKY7X4VNH"
-};
+    apiKey: "AIzaSyAKXPVooIceV5Nrt3bgO4gQOGWI4rol16Y",
+    authDomain: "kampus-53905.firebaseapp.com",
+    projectId: "kampus-53905",
+    storageBucket: "kampus-53905.firebasestorage.app",
+    messagingSenderId: "422476320439",
+    appId: "1:422476320439:web:1d3ad08fce4da4b6614732",
+    measurementId: "G-9LY4VDMWGR"
+  };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

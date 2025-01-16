@@ -1,4 +1,4 @@
-// UserService.ts
+//types/UserService.ts
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 

@@ -1,3 +1,4 @@
+// components/CommentSection.tsx
 import React, { useState, useEffect } from 'react';
 import {
     View,
@@ -29,7 +30,6 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, onClose }) => {
     const [loading, setLoading] = useState(true);
     const { user } = useAuth();
 
-    // Subscribe to real-time comment updates
     useEffect(() => {
         if (!postId) return;
 
@@ -54,25 +54,13 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, onClose }) => {
 
     const handleAddComment = async () => {
         if (!newComment.trim() || !user) return;
-
-        try {
-            await CommentService.addComment(postId, user.uid, newComment.trim());
-            setNewComment('');
-            // No need to manually reload comments as the snapshot listener will update automatically
-        } catch (error) {
-            console.error('Error adding comment:', error);
-        }
+        await CommentService.addComment(postId, user.uid, newComment.trim());
+        setNewComment('');
     };
 
     const handleDeleteComment = async (comment: Comment) => {
         if (!user || user.uid !== comment.userId) return;
-
-        try {
-            await CommentService.deleteComment(postId, comment);
-            // No need to manually reload comments as the snapshot listener will update automatically
-        } catch (error) {
-            console.error('Error deleting comment:', error);
-        }
+        await CommentService.deleteComment(postId, comment);
     };
 
     if (loading) {
@@ -88,10 +76,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, onClose }) => {
             <View style={styles.commentHeader}>
                 <TouchableOpacity style={styles.profileImageContainer}>
                     {item.profileImage ? (
-                        <Image
-                            source={{ uri: item.profileImage }}
-                            style={styles.profileImage}
-                        />
+                        <Image source={{ uri: item.profileImage }} style={styles.profileImage} />
                     ) : (
                         <Ionicons name="person-circle-outline" size={40} color="white" />
                     )}
@@ -103,10 +88,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, onClose }) => {
                     </Text>
                 </View>
                 {user && user.uid === item.userId && (
-                    <TouchableOpacity
-                        onPress={() => handleDeleteComment(item)}
-                        style={styles.deleteButton}
-                    >
+                    <TouchableOpacity onPress={() => handleDeleteComment(item)} style={styles.deleteButton}>
                         <Ionicons name="trash-outline" size={20} color="#ff4444" />
                     </TouchableOpacity>
                 )}
@@ -116,10 +98,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, onClose }) => {
     );
 
     return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={styles.container}
-        >
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.headerText}>Comments ({comments.length})</Text>
                 <TouchableOpacity onPress={onClose} style={styles.closeButton}>
@@ -148,10 +127,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, onClose }) => {
                 />
                 <TouchableOpacity
                     onPress={handleAddComment}
-                    style={[
-                        styles.sendButton,
-                        !newComment.trim() && styles.sendButtonDisabled
-                    ]}
+                    style={[styles.sendButton, !newComment.trim() && styles.sendButtonDisabled]}
                     disabled={!newComment.trim()}
                 >
                     <Ionicons name="send" size={24} color={newComment.trim() ? "white" : "#666"} />
@@ -164,13 +140,13 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, onClose }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#000',
+        backgroundColor: '#1e1e1e',
     },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: 15,
+        padding: 16,
         borderBottomWidth: 1,
         borderBottomColor: '#333',
     },
@@ -180,22 +156,15 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     closeButton: {
-        padding: 5,
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#000',
+        padding: 8,
     },
     commentsList: {
-        padding: 15,
+        paddingBottom: 16,
     },
     commentContainer: {
-        marginBottom: 15,
-        padding: 10,
-        backgroundColor: '#111',
-        borderRadius: 10,
+        padding: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: '#333',
     },
     commentHeader: {
         flexDirection: 'row',
@@ -203,7 +172,7 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     profileImageContainer: {
-        marginRight: 10,
+        marginRight: 8,
     },
     profileImage: {
         width: 40,
@@ -218,38 +187,41 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     commentTime: {
-        color: '#666',
+        color: '#888',
         fontSize: 12,
+    },
+    deleteButton: {
+        padding: 8,
     },
     commentText: {
         color: 'white',
-        marginLeft: 50,
     },
     inputContainer: {
         flexDirection: 'row',
-        padding: 15,
+        alignItems: 'center',
+        padding: 16,
         borderTopWidth: 1,
         borderTopColor: '#333',
-        alignItems: 'center',
     },
     input: {
         flex: 1,
-        backgroundColor: '#222',
-        borderRadius: 20,
-        paddingHorizontal: 15,
-        paddingVertical: 10,
+        backgroundColor: '#333',
         color: 'white',
-        marginRight: 10,
-        maxHeight: 100,
+        borderRadius: 20,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        marginRight: 8,
     },
     sendButton: {
-        padding: 10,
+        padding: 8,
     },
     sendButtonDisabled: {
         opacity: 0.5,
     },
-    deleteButton: {
-        padding: 5,
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
 

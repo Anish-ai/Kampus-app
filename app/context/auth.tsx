@@ -1,3 +1,4 @@
+// app/context/auth.tsx
 import { createContext, useContext, useEffect, useState } from 'react';
 import { 
   createUserWithEmailAndPassword, 
@@ -15,7 +16,6 @@ import {
 } from '../../firebaseConfig';
 import { ProfileService } from '../../types/profiles';
 
-// Define the shape of our user object
 interface UserData {
   uid: string;
   email: string | null;
@@ -23,22 +23,24 @@ interface UserData {
   uname?: string;
 }
 
-// Define the shape of our context
 interface AuthContextType {
   user: UserData | null;
   loading: boolean;
   signup: (email: string, password: string, username: string, uname: string) => Promise<FirebaseUser>;
-  login: (email: string, password: string) => Promise<FirebaseUser>;
+  login: (email: string, password: string) => Promise<FirebaseUser>; // Update the return type
   logout: () => Promise<void>;
+  updateUserProfile: (updates: Partial<UserData>) => Promise<void>;
 }
 
-// Create the context with default values
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
   signup: async () => { throw new Error('not implemented') },
   login: async () => { throw new Error('not implemented') },
-  logout: async () => { throw new Error('not implemented') }
+  logout: async () => { throw new Error('not implemented') },
+  updateUserProfile: async () => { throw new Error('not implemented') }
+
+  
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -46,28 +48,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored user data on mount
-    getUserFromStorage().then(storedUser => {
-      if (storedUser) {
-        setUser(storedUser);
-      }
-      setLoading(false);
-    });
-
-    // Subscribe to auth state changes
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      console.log('Auth state changed:', firebaseUser); // Debugging log
       if (firebaseUser) {
-        // Get additional user data from Firestore
         const firestoreData = await getUserFromFirestore(firebaseUser.uid);
-        
-        // Store complete user data
         const userData: UserData = {
           uid: firebaseUser.uid,
           email: firebaseUser.email,
           username: firestoreData?.username,
-          uname: firestoreData?.uname
+          uname: firestoreData?.uname,
         };
-        
         setUser(userData);
         await saveUserToStorage(userData);
       } else {
@@ -76,49 +66,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       setLoading(false);
     });
-
+  
     return unsubscribe;
   }, []);
 
-  const signup = async (email: string, password: string, username: string, uname: string) => {
+  const signup = async (email: string, password: string, username: string, uname: string): Promise<FirebaseUser> => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    
-    // Save additional user data to Firestore
-    await saveUserToFirestore(userCredential.user.uid, {
-      uname,
-      username,
-      email
-    });
-
-    // Create user profile in profiles collection
+    await saveUserToFirestore(userCredential.user.uid, { uname, username, email });
     await ProfileService.createProfile(userCredential.user.uid, username, uname);
-
-    return userCredential.user;
+    return userCredential.user; // Return the FirebaseUser
   };
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<FirebaseUser> => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    return userCredential.user;
+    return userCredential.user; // Return the FirebaseUser
   };
 
   const logout = async () => {
     await signOut(auth);
   };
 
+  const updateUserProfile = async (updates: Partial<UserData>) => {
+    if (!user) return;
+    await saveUserToFirestore(user.uid, updates);
+    setUser({ ...user, ...updates });
+    await saveUserToStorage({ ...user, ...updates });
+  };
+
   return (
-    <AuthContext.Provider value={{
-      user,
-      loading,
-      signup,
-      login,
-      logout,
-    }}>
+    <AuthContext.Provider value={{ user, loading, signup, login, logout, updateUserProfile }}>
       {!loading && children}
     </AuthContext.Provider>
   );
 }
 
-// Custom hook to use auth context
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);

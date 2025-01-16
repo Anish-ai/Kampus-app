@@ -1,3 +1,4 @@
+//types/comments.ts
 import { db } from '../firebaseConfig';
 import { 
     doc, 

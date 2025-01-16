@@ -30,7 +30,7 @@ export default function Login() {
 
     setIsLoading(true);
     try {
-      await login(email, password);
+      const user = await login(email, password); // Handle the returned user
       router.replace('/home');
     } catch (error: any) {
       let message = 'Login failed';
@@ -55,11 +55,7 @@ export default function Login() {
   };
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-    >
-      <StatusBar style="light" />
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
       <View style={styles.contentContainer}>
         <View style={styles.headerContainer}>
           <Text style={styles.title}>Welcome Back</Text>
@@ -90,7 +86,7 @@ export default function Login() {
               value={password}
               onChangeText={setPassword}
               secureTextEntry
-              autoComplete="password"
+              autoComplete="current-password"
             />
           </View>
 

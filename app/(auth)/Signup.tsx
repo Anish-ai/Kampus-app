@@ -26,157 +26,130 @@ export default function Signup() {
     const [uname, setUname] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-
-    const validateUsername = (username: string) => {
-        return /^[a-zA-Z0-9_]{3,20}$/.test(username);
-    };
-    const validatePassword = (password: string) => {
-        return password.length >= 6; // You can add more validation rules here
-    };
-
+  
     const handleSignup = async () => {
-        if (!email || !password || !confirmPassword || !username) {
-            Alert.alert('Error', 'Please fill in all fields');
-            return;
-        }
-
-        if (!validateUsername(username)) {
-            Alert.alert('Error', 'Username must be 3-20 characters long and can only contain letters, numbers, and underscores');
-            return;
-        }
-
-        if (password !== confirmPassword) {
-            Alert.alert('Error', 'Passwords do not match');
-            return;
-        }
-
-        if (!validatePassword(password)) {
-            Alert.alert('Error', 'Password must be at least 6 characters long');
-            return;
-        }
-
-        setIsLoading(true);
-        try {
-            // Check if username exists
-            const usernameExists = await checkUsernameExists(username);
-            if (usernameExists) {
-                Alert.alert('Error', 'Username is already taken');
-                return;
-            }
-
-            await signup(email, password, username, uname);
-            router.replace('/home');
-        } catch (error: any) {
-            let message = 'Signup failed';
-            // ... rest of your error handling remains the same
-            Alert.alert('Error', message);
-        } finally {
-            setIsLoading(false);
-        }
+      if (!email || !password || !confirmPassword || !username) {
+        Alert.alert('Error', 'Please fill in all fields');
+        return;
+      }
+  
+      if (password !== confirmPassword) {
+        Alert.alert('Error', 'Passwords do not match');
+        return;
+      }
+  
+      setIsLoading(true);
+      try {
+        const user = await signup(email, password, username, uname); // Handle the returned user
+        router.replace('/home');
+      } catch (error: any) {
+        let message = 'Signup failed';
+        // Handle specific error codes
+        Alert.alert('Error', message);
+      } finally {
+        setIsLoading(false);
+      }
     };
-
+  
     return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={styles.container}
-        >
-            <ScrollView>
-                <StatusBar style="light" />
-                <View style={styles.contentContainer}>
-                    <View style={styles.headerContainer}>
-                        <Text style={styles.title}>Create Account</Text>
-                        <Text style={styles.subtitle}>Sign up to get started</Text>
-                    </View>
-
-                    <View style={styles.formContainer}>
-                        <View style={styles.inputContainer}>
-                            <Text style={styles.label}>Name</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Tell me your name 💦"
-                                placeholderTextColor="#666666"
-                                value={uname}
-                                onChangeText={setUname}
-                                autoCapitalize="none"
-                                autoComplete="name"
-                            />
-                        </View>
-                        <View style={styles.inputContainer}>
-                            <Text style={styles.label}>Username</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Choose a username"
-                                placeholderTextColor="#666666"
-                                value={username}
-                                onChangeText={setUsername}
-                                autoCapitalize="none"
-                                autoComplete="username"
-                            />
-                        </View>
-                        <View style={styles.inputContainer}>
-                            <Text style={styles.label}>Email</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Enter your email"
-                                placeholderTextColor="#666666"
-                                value={email}
-                                onChangeText={setEmail}
-                                autoCapitalize="none"
-                                keyboardType="email-address"
-                                autoComplete="email"
-                            />
-                        </View>
-
-                        <View style={styles.inputContainer}>
-                            <Text style={styles.label}>Password</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Create a password"
-                                placeholderTextColor="#666666"
-                                value={password}
-                                onChangeText={setPassword}
-                                secureTextEntry
-                                autoComplete="new-password"
-                            />
-                        </View>
-
-                        <View style={styles.inputContainer}>
-                            <Text style={styles.label}>Confirm Password</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Confirm your password"
-                                placeholderTextColor="#666666"
-                                value={confirmPassword}
-                                onChangeText={setConfirmPassword}
-                                secureTextEntry
-                                autoComplete="new-password"
-                            />
-                        </View>
-
-                        <TouchableOpacity
-                            style={[styles.button, isLoading && styles.buttonDisabled]}
-                            onPress={handleSignup}
-                            disabled={isLoading}
-                        >
-                            {isLoading ? (
-                                <ActivityIndicator color="#FFFFFF" />
-                            ) : (
-                                <Text style={styles.buttonText}>Create Account</Text>
-                            )}
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.footer}>
-                        <Text style={styles.footerText}>Already have an account?</Text>
-                        <TouchableOpacity onPress={() => router.push('/Login')}>
-                            <Text style={styles.footerLink}>Sign In</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+        <ScrollView>
+          <StatusBar style="light" />
+          <View style={styles.contentContainer}>
+            <View style={styles.headerContainer}>
+              <Text style={styles.title}>Create Account</Text>
+              <Text style={styles.subtitle}>Sign up to get started</Text>
+            </View>
+  
+            <View style={styles.formContainer}>
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Name</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Tell me your name 💦"
+                  placeholderTextColor="#666666"
+                  value={uname}
+                  onChangeText={setUname}
+                  autoCapitalize="none"
+                  autoComplete="name"
+                />
+              </View>
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Username</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Choose a username"
+                  placeholderTextColor="#666666"
+                  value={username}
+                  onChangeText={setUsername}
+                  autoCapitalize="none"
+                  autoComplete="username"
+                />
+              </View>
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Email</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter your email"
+                  placeholderTextColor="#666666"
+                  value={email}
+                  onChangeText={setEmail}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  autoComplete="email"
+                />
+              </View>
+  
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Password</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Create a password"
+                  placeholderTextColor="#666666"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry
+                  autoComplete="new-password"
+                />
+              </View>
+  
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Confirm Password</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Confirm your password"
+                  placeholderTextColor="#666666"
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  secureTextEntry
+                  autoComplete="new-password"
+                />
+              </View>
+  
+              <TouchableOpacity
+                style={[styles.button, isLoading && styles.buttonDisabled]}
+                onPress={handleSignup}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <ActivityIndicator color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.buttonText}>Create Account</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+  
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>Already have an account?</Text>
+              <TouchableOpacity onPress={() => router.push('/Login')}>
+                <Text style={styles.footerLink}>Sign In</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     );
-}
+  }
 
 const styles = StyleSheet.create({
     container: {
