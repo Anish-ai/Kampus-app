@@ -72,6 +72,7 @@ export default function ProfileScreen() {
 
     const ProfileHeader = () => (
         <>
+            {/* Header Section */}
             <View style={styles.header}>
                 <Image
                     source={
@@ -83,7 +84,9 @@ export default function ProfileScreen() {
                 />
                 <View style={styles.headerIcons}>
                     <Ionicons name="information-circle" size={25} color="#fff" />
-                    <Ionicons name="settings" size={25} color="#fff" />
+                    <Link href="/profile/Settings">
+                        <Ionicons name="settings" size={25} color="#fff" />
+                    </Link>
                     <Ionicons name="share-social" size={25} color="#fff" />
                 </View>
             </View>
@@ -120,6 +123,7 @@ export default function ProfileScreen() {
                 </View>
             </View>
 
+            {/* Posts Section Header */}
             <Text style={styles.PostText}>
                 Posts ({profile?.posts || 0})
             </Text>
@@ -151,73 +155,85 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#1e1e1e',
+        backgroundColor: '#181818',
     },
     header: {
-        height: 200,
-        justifyContent: 'flex-end',
-        alignItems: 'center',
+        height: 140,
+        backgroundColor: 'grey',
     },
     headerImage: {
         width: '100%',
         height: '100%',
         position: 'absolute',
+        zIndex: -1,
     },
     headerIcons: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-        padding: 16,
+        paddingHorizontal: 20,
+        marginTop: 10,
+        alignSelf: 'flex-end',
+        gap: 15,
     },
     profileContainer: {
         alignItems: 'center',
         marginTop: -50,
     },
     profileImageContainer: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        backgroundColor: '#333',
-        justifyContent: 'center',
-        alignItems: 'center',
+        borderWidth: 3,
+        borderColor: '#000',
+        borderRadius: 55,
+        overflow: 'hidden',
+        marginBottom: 10,
+        backgroundColor: '#3C3C3C',
     },
     profileImage: {
         width: 100,
         height: 100,
-        borderRadius: 50,
     },
     profileName: {
-        color: 'white',
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginTop: 8,
+        color: '#fff',
+        fontSize: 30,
+        fontFamily: 'Jaldi-Bold',
+        marginBottom: -10,
     },
     profileHandle: {
         color: '#888',
-        fontSize: 16,
+        fontSize: 20,
+        fontFamily: 'Jaldi-Regular',
     },
     editButton: {
-        backgroundColor: '#007AFF',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 20,
-        marginTop: 16,
+        borderColor: '#0088CC',
+        borderWidth: 1.5,
+        borderRadius: 25,
+        paddingVertical: 4,
+        paddingHorizontal: 15,
+        marginTop: 10,
+        marginBottom: 10,
     },
     editButtonText: {
-        color: 'white',
-        fontWeight: 'bold',
+        color: '#fff',
+        fontFamily: 'Jaldi-Regular',
+        fontSize: 18,
     },
     friendsCount: {
-        color: 'white',
-        fontSize: 16,
-        marginTop: 8,
+        color: '#0088CC',
+        fontSize: 28,
+        marginVertical: 10,
+        fontFamily: 'Jaldi-Regular',
     },
     bioContainer: {
-        padding: 16,
+        width: '100%',
+        padding: 10,
+        borderColor: '#3C3C3C',
+        borderRadius: 10,
+        borderTopWidth: 0.5,
+        borderBottomWidth: 0.5,
     },
     bioText: {
-        color: 'white',
-        textAlign: 'center',
+        color: '#fff',
+        fontSize: 18,
+        fontFamily: 'Jaldi-Regular',
+        lineHeight: 25,
     },
     PostText: {
         color: 'white',
@@ -227,14 +243,22 @@ const styles = StyleSheet.create({
     },
     grid: {
         paddingHorizontal: 8,
+        marginLeft: -10,
     },
     postContainer: {
-        width: (width - 16) / numColumns,
-        height: (width - 16) / numColumns,
+        width: (width - 20) / numColumns,
+        height: (width - 20) / numColumns,
         margin: 4,
         backgroundColor: '#333',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    separatingLine: {
+        width: '100%',
+        height: 0.2,
+        backgroundColor: '#0088CC',
+        marginVertical: 10,
+        marginTop: 0,
     },
     postImage: {
         width: '100%',
