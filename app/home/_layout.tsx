@@ -1,3 +1,4 @@
+// /app/home/_layout.tsx
 import { Tabs } from 'expo-router';
 import { Stack } from 'expo-router';
 import React from 'react';
@@ -14,16 +15,7 @@ export default function TabLayout() {
       tabBar={(props) => <CustomTabBar {...props} />} // Use the custom tab bar with sliding rectangle
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false, // Hide header for the tab bar screens
-        tabBarStyle: {
-          paddingBottom: 3, // Adjust tab bar padding
-          paddingTop: 10, // Adjust tab bar padding
-          height: 70, // Adjust tab bar height
-        },
-        tabBarLabelStyle: {
-          fontSize: 15, // Adjust label font size
-          fontFamily: 'Jaldi-Bold', // Adjust label font family
-        },
+        headerShown: false,
       }}
     >
       <Tabs.Screen
@@ -34,7 +26,7 @@ export default function TabLayout() {
             <TabBarIcon
               name={focused ? 'home' : 'home-outline'}
               color={color}
-              size={focused ? 25 : 22}
+              size={focused ? 28 : 23}
             />
           ),
         }}
@@ -53,28 +45,28 @@ export default function TabLayout() {
       </Tabs.Screen>
 
       <Tabs.Screen
-        name="Search"
+        name="search"
         options={{
           title: 'Search',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? 'search' : 'search-outline'}
               color={color}
-              size={focused ? 25 : 22}
+              size={focused ? 28 : 23}
             />
           ),
         }}
       />
 
       <Tabs.Screen
-        name="Chats"
+        name="chats"
         options={{
           title: 'Chats',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? 'chatbubble' : 'chatbubble-outline'}
               color={color}
-              size={focused ? 25 : 22}
+              size={focused ? 28 : 23}
             />
           ),
         }}

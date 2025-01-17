@@ -1,3 +1,4 @@
+// /src/ChatsScreens/Groups.tsx
 import React from 'react';
 import { FlatList, SafeAreaView } from 'react-native';
 import ChatDesign from '../../components/ChatDesign';

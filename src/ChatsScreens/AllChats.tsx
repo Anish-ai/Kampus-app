@@ -1,8 +1,9 @@
+// /src/ChatsScreens/AllChats.tsx
 import React from 'react';
 import { FlatList, SafeAreaView } from 'react-native';
 import ChatDesign from '../../components/ChatDesign';
 
-type ChatType = 'personal' | 'group' | 'community';
+type ChatType = 'personal' | 'group';
 
 const chatData: { id: string; type: ChatType; name: string; lastMessage: string; time: string; unreadMessages: number; senderName: string; }[] = [
   {
@@ -24,15 +25,6 @@ const chatData: { id: string; type: ChatType; name: string; lastMessage: string;
     senderName: 'User',
   },
   {
-    id: '3',
-    type: 'community',
-    name: 'Community',
-    lastMessage: 'Your runtime has been disconnected...',
-    time: '06:09',
-    unreadMessages: 0,
-    senderName: 'Group',
-  },
-  {
     id: '4',
     type: 'personal',
     name: 'Jatin',
@@ -50,15 +42,6 @@ const chatData: { id: string; type: ChatType; name: string; lastMessage: string;
     unreadMessages: 0,
     senderName: 'Jatin',
   },
-  {
-    id: '6',
-    type: 'community',
-    name: 'IITP',
-    lastMessage: 'Pritam Sir ko dekha h??',
-    time: '13:10',
-    unreadMessages: 0,
-    senderName: 'FRIENDS',
-  }
 ];
 
 const AllChats = () => {

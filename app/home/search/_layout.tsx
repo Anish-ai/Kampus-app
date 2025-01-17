@@ -2,19 +2,18 @@
 import { Redirect, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
-const ProfileLayout = () => {
+const SearchLayout = () => {
 
   return (
     <>
       <Stack>
         <Stack.Screen
-          name="Profile"
+          name="Search"
         />
         <Stack.Screen
-          name="Settings"
-        />
-        <Stack.Screen
-          name="EditProfile"
+          name="id" options={{
+            headerShown: true, // Ensure the header is visible
+          }}
         />
       </Stack>
       <StatusBar backgroundColor="#161622" style="light" />
@@ -22,4 +21,4 @@ const ProfileLayout = () => {
   );
 };
 
-export default ProfileLayout;
+export default SearchLayout;

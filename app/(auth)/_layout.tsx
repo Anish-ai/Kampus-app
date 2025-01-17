@@ -1,3 +1,4 @@
+// /app/(auth)/_layout.tsx
 import { Redirect, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 

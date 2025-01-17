@@ -1,3 +1,4 @@
+// /src/ChatsScreens/Community.tsx
 import React from 'react';
 import { FlatList, SafeAreaView } from 'react-native';
 import ChatDesign from '../../components/ChatDesign';
@@ -5,7 +6,7 @@ import { chatData } from './AllChats';  // Import chatData from AllChats
 
 const Community = () => {
   // Filter only group chats
-  const groupChats = chatData.filter((chat) => chat.type === 'community');
+  const groupChats = chatData.filter((chat) => chat.type === 'group');
 
   return (
     <SafeAreaView>

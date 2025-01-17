@@ -1,10 +1,8 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-// ChatDesign component
 interface ChatDesignProps {
-  type: 'personal' | 'group' | 'community';
+  type: 'personal' | 'group';
   name: string;
   lastMessage: string;
   time: string;
@@ -12,44 +10,30 @@ interface ChatDesignProps {
   senderName: string;
 }
 
-const ChatDesign: React.FC<ChatDesignProps> = ({ type, name, lastMessage, time, unreadMessages, senderName }) => {
-  // Conditional rendering based on chat type
-  const renderChatIcon = () => {
-    if (type === 'personal') {
-      return <FontAwesome name="user-circle-o" size={30} color="gray" />;
-    } else if (type === 'group') {
-      return <FontAwesome name="users" size={30} color="gray" />;
-    } else if (type === 'community') {
-      return <FontAwesome name="users" size={30} color="gray" />;
-    }
-  };
-
+const ChatDesign: React.FC<ChatDesignProps> = ({
+  type,
+  name,
+  lastMessage,
+  time,
+  unreadMessages,
+  senderName,
+}) => {
   return (
     <TouchableOpacity style={styles.container}>
-      <View style={styles.leftSection}>
-        {renderChatIcon()}
+      <View style={styles.avatar}>
+        {/* Add avatar logic here */}
       </View>
-      <View style={styles.middleSection}>
-        <Text style={styles.chatName}>
-          {name}
+      <View style={styles.content}>
+        <Text style={styles.name}>
+          {type === 'personal' ? `Chat with ${name}` : name}
         </Text>
-        <Text style={styles.lastMessage} numberOfLines={1}>
-          {senderName && (
-            <Text style={{fontWeight:'bold'}}>{senderName + ': '}</Text>
-          )}
-          {lastMessage}
-        </Text>
+        <Text style={styles.lastMessage}>{lastMessage}</Text>
       </View>
-      <View style={styles.rightSection}>
-        {type != 'community' && (
-          <Text style={styles.time}>{time}</Text>
-        )}
-        {type == 'community' && (
-          <Ionicons name="chevron-forward" size={24} color="#D9D9D9" />
-        )}
+      <View style={styles.meta}>
+        <Text style={styles.time}>{time}</Text>
         {unreadMessages > 0 && (
           <View style={styles.unreadBadge}>
-            <Text style={styles.unreadCount}>{unreadMessages}</Text>
+            <Text style={styles.unreadText}>{unreadMessages}</Text>
           </View>
         )}
       </View>
@@ -57,7 +41,6 @@ const ChatDesign: React.FC<ChatDesignProps> = ({ type, name, lastMessage, time, 
   );
 };
 
-// Styles
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
@@ -66,27 +49,27 @@ const styles = StyleSheet.create({
     borderBottomColor: '#0A4B6C',
     height: 75,
   },
-  leftSection: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 10,
-    
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#ccc',
+    marginRight: 16,
   },
-  middleSection: {
+  content: {
     flex: 1,
-    justifyContent: 'center',
   },
-  chatName: {
+  name: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#fff',
   },
   lastMessage: {
+    fontSize: 14,
     color: '#ccc',
   },
-  rightSection: {
-    justifyContent: 'center',
-    alignItems: 'center',
+  meta: {
+    alignItems: 'flex-end',
   },
   time: {
     color: '#ccc',
@@ -99,7 +82,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     marginTop: 5,
   },
-  unreadCount: {
+  unreadText: {
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 12,

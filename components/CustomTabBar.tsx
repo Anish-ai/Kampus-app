@@ -7,8 +7,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Dimensions } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
-
 const { width: screenWidth } = Dimensions.get('window'); // Get screen width
+
 const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
   const colorScheme = useColorScheme();
   const insets = useSafeAreaInsets();
@@ -50,12 +50,12 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
         style={[
           {
             position: 'absolute',
-            width: tabWidth - 66, // Set rectangle width smaller than tab width for padding
+            width: tabWidth - 80, // Set rectangle width smaller than tab width for padding
             height: 35, // Set rectangle height
             backgroundColor: '#00679B', // Rectangle color
             borderRadius: 20, // Make the rectangle rounded
-            top: 7, // Align vertically at the top
-            left: (33 / 360) * screenWidth, // Add padding to the left
+            top: 5, // Align vertically at the top
+            left: 40, // Add 20 padding to the left
           },
           slidingStyle, // Apply animated position
         ]}
@@ -89,7 +89,7 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigat
             })}
 
             {/* Render Label */}
-            <Text style={{ color, fontSize: 15, fontFamily: 'Jaldi-Bold', bottom: -5,}}>{label}</Text>
+            <Text style={{ color, fontSize: 15, fontFamily: 'Jaldi-Bold', bottom: -5 }}>{label}</Text>
           </TouchableOpacity>
         );
       })}

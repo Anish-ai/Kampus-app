@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
     post: {
         backgroundColor: 'black',
         padding: 10,
+        paddingVertical: 3,
         paddingRight: 20,
     },
     postHeader: {
@@ -92,7 +93,7 @@ const styles = StyleSheet.create({
     },
     username: {
         color: 'white',
-        fontSize: 23,
+        fontSize: 20,
         marginLeft: 5,
         fontFamily: 'Jaldi-Bold',
     },

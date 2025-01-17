@@ -1,3 +1,4 @@
+// /app/home/Chats.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
@@ -13,12 +14,12 @@ import {
   GestureResponderEvent
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import Allchats from '../../src/ChatsScreens/AllChats';
-import Community from '../../src/ChatsScreens/Community';
-import GroupChats from '../../src/ChatsScreens/Groups';
-import Status from '../../src/ChatsScreens/Status';
+import Allchats from '../../../src/ChatsScreens/AllChats';
+import Community from '../../../src/ChatsScreens/Community';
+import GroupChats from '../../../src/ChatsScreens/Groups';
+import Status from '../../../src/ChatsScreens/Status';
 import { Link } from 'expo-router';
-import ChatDesign from '../../components/ChatDesign';
+import ChatDesign from '../../../components/ChatDesign';
 import * as Font from 'expo-font';
 import { useFonts } from 'expo-font';
 
@@ -174,7 +175,7 @@ const ChatsScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Image source={require('../../assets/images/Kampus.png')} style={styles.kampus} />
+        <Image source={require('../../../assets/images/Kampus.png')} style={styles.kampus} />
         <View style={styles.headerIcons}>
           <Ionicons name="scan-outline" size={30} color="grey" />
           {/* <Link href="/Profile">
