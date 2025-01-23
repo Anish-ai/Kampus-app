@@ -1,6 +1,6 @@
 # Kampus - College Social Media App
 
-![Kampus Logo](https://via.placeholder.com/150) <!-- Add your logo here -->
+![Kampus Logo]([https://via.placeholder.com/150](https://i.postimg.cc/KzcSRSDp/splash.png)) <!-- Add your logo here -->
 
 Kampus is a **college-focused social media app** designed to help students stay connected, share updates, and engage with their college community. It features news feeds, SOS alerts, event updates, user profiles, and real-time chat functionality.
 
@@ -63,7 +63,7 @@ Follow these steps to set up the project on your local machine.
    ```
 4. **Run the App**:
    ```bash
-   expo start
+   npm start
    ```
    Scan the QR code using the Expo Go app on your mobile device or use an emulator.
 ### **Project Structure**
