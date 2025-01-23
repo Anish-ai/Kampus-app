@@ -54,7 +54,6 @@ Follow these steps to set up the project on your local machine.
    Create a .env file in the root directory and add your Firebase configuration:
 
    ```env
-   Copy
    REACT_APP_FIREBASE_API_KEY=your-api-key
    REACT_APP_FIREBASE_AUTH_DOMAIN=your-auth-domain
    REACT_APP_FIREBASE_PROJECT_ID=your-project-id
