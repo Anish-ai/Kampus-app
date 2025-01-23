@@ -1,50 +1,127 @@
-# Welcome to your Expo app 👋
+# Kampus - College Social Media App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+![Kampus Logo](https://via.placeholder.com/150) <!-- Add your logo here -->
 
-## Get started
+Kampus is a **college-focused social media app** designed to help students stay connected, share updates, and engage with their college community. It features news feeds, SOS alerts, event updates, user profiles, and real-time chat functionality.
 
-1. Install dependencies
+---
 
+## **Features**
+
+- **News Feed**: Share and view posts related to college events, news, or entertainment.
+- **SOS Alerts**: Send and receive emergency alerts within the college community.
+- **User Profiles**: Customizable profiles with name, username, profile/header images, and friends list.
+- **Posts**: Create, like, and comment on posts.
+- **Chats**: Real-time messaging with other users.
+- **Edit Profile**: Update profile information and images.
+
+---
+
+## **Tech Stack**
+
+- **Frontend**: React Native, Expo
+- **Backend**: Firebase (Firestore, Authentication, Storage)
+- **State Management**: React Context API
+- **Navigation**: Expo Router
+- **Styling**: React Native Stylesheet
+
+---
+
+## **Getting Started**
+
+Follow these steps to set up the project on your local machine.
+
+### **Prerequisites**
+
+- [Node.js](https://nodejs.org/) (v16 or higher)
+- [Expo CLI](https://docs.expo.dev/get-started/installation/) (install globally using `npm install -g expo-cli`)
+- Firebase account (for backend setup)
+
+### **Installation**
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/your-username/kampus-app.git
+   cd kampus
+   ```
+2. **Install Dependencies**:
    ```bash
    npm install
    ```
+3. **Set Up Firebase**:
+   Create a Firebase project at Firebase Console.
+   Add a web app to your Firebase project and copy the Firebase configuration.
+   Create a .env file in the root directory and add your Firebase configuration:
 
-2. Start the app
-
-   ```bash
-    npx expo start
+   ```env
+   Copy
+   REACT_APP_FIREBASE_API_KEY=your-api-key
+   REACT_APP_FIREBASE_AUTH_DOMAIN=your-auth-domain
+   REACT_APP_FIREBASE_PROJECT_ID=your-project-id
+   REACT_APP_FIREBASE_STORAGE_BUCKET=your-storage-bucket
+   REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your-messaging-sender-id
+   REACT_APP_FIREBASE_APP_ID=your-app-id
    ```
+4. **Run the App**:
+   ```bash
+   expo start
+   ```
+   Scan the QR code using the Expo Go app on your mobile device or use an emulator.
+### **Project Structure**
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
 ```
+kampus-app/
+├── .expo/             # Expo development configurations
+├── app/               # Main application components
+│   ├── (auth)/        # Authentication screens
+│   ├── context/       # React context providers
+│   ├── home/          # Home screen components
+│   └── profile/       # Profile management
+├── assets/            # Images, fonts, and static files
+├── components/        # Reusable UI components
+├── constants/         # Constant values and themes
+├── hooks/             # Custom React hooks
+├── types/             # TypeScript type definitions
+├── firebaseConfig.js  # Firebase configuration
+├── app.json           # Expo app configuration
+├── babel.config.js    # Babel configuration
+├── tsconfig.json      # TypeScript configuration
+└── package.json       # Project dependencies
+```
+### **Dependencies**
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+- React Native
+- Expo
+- Firebase (Authentication/Firestore)
+- React Navigation
+- TypeScript
+- React Native Paper (UI Library)
+### **Contributing**
 
-## Learn more
+We welcome contributions from the community! Here’s how you can get started:
 
-To learn more about developing your project with Expo, look at the following resources:
+**Steps to Contribute**
+1. **Fork the repository**:
+   Click the "Fork" button on the top right of the repository page.
+2. **Clone Your Fork**:
+   ```bash
+   git clone https://github.com/your-username/kampus.git
+   cd kampus
+   ```
+3. **Create a feature branch**:
+   ```bash
+   git checkout -b feature/your-feature
+   ```
+4. **Commit changes**:
+    ```bash
+      git commit -m 'Add: Your feature description'
+    ```
+5. **Push to your fork**:
+   ```bash
+   git push origin feature/your-feature
+    ```
+6. **Create a Pull Request**:
+- Go to the original repository and click "New Pull Request".
+- Provide a clear description of your changes and link any related issues.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### **Issue Labels**
