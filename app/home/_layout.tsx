@@ -6,16 +6,34 @@ import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import CustomTabBar from '../../components/CustomTabBar'; // Make sure to import the CustomTabBar component
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
+import { useFocusEffect } from '@react-navigation/native';
+import { useNavigation } from 'expo-router';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const navigation = useNavigation();
+
+  // Reset the Chats Tab stack when it gains focus
+  useFocusEffect(
+    React.useCallback(() => {
+      // Reset the stack to the Chats Screen when the Chats Tab is selected
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'chats/ChatsScreen' }], // Ensure this matches the route name
+      });
+    }, [navigation])
+  );
 
   return (
     <Tabs
       tabBar={(props) => <CustomTabBar {...props} />} // Use the custom tab bar with sliding rectangle
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: Colors[colorScheme ?? 'light'].background,
+          height: 40,
+        },
       }}
     >
       <Tabs.Screen

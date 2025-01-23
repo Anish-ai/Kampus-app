@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
 interface ChatDesignProps {
   type: 'personal' | 'group';
@@ -8,6 +8,8 @@ interface ChatDesignProps {
   time: string;
   unreadMessages: number;
   senderName: string;
+  profileImageUrl?: string; // Add profileImageUrl prop
+  onPress?: () => void; // Add onPress prop for navigation
 }
 
 const ChatDesign: React.FC<ChatDesignProps> = ({
@@ -17,17 +19,31 @@ const ChatDesign: React.FC<ChatDesignProps> = ({
   time,
   unreadMessages,
   senderName,
+  profileImageUrl,
+  onPress,
 }) => {
   return (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={onPress}>
       <View style={styles.avatar}>
-        {/* Add avatar logic here */}
+        {profileImageUrl ? (
+          <Image
+            source={{ uri: profileImageUrl }}
+            style={styles.profileImage}
+          />
+        ) : (
+          <Text style={styles.avatarText}>
+            {name[0].toUpperCase()} {/* Display the first letter of the name */}
+          </Text>
+        )}
       </View>
       <View style={styles.content}>
         <Text style={styles.name}>
-          {type === 'personal' ? `Chat with ${name}` : name}
+          {type === 'personal' ? name : `${name} (Group)`} {/* Show group tag for group chats */}
         </Text>
-        <Text style={styles.lastMessage}>{lastMessage}</Text>
+        <Text style={styles.lastMessage}>
+          {senderName && `${senderName}: `} {/* Show sender name if available */}
+          {lastMessage}
+        </Text>
       </View>
       <View style={styles.meta}>
         <Text style={styles.time}>{time}</Text>
@@ -48,16 +64,31 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.2,
     borderBottomColor: '#0A4B6C',
     height: 75,
+    alignItems: 'center',
+    backgroundColor: '#1C1C28', // Dark background for better contrast
   },
   avatar: {
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: '#ccc',
+    backgroundColor: '#007AFF', // Blue background for avatar
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 16,
+  },
+  profileImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+  avatarText: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
   content: {
     flex: 1,
+    justifyContent: 'center',
   },
   name: {
     fontSize: 16,
@@ -67,9 +98,11 @@ const styles = StyleSheet.create({
   lastMessage: {
     fontSize: 14,
     color: '#ccc',
+    marginTop: 4,
   },
   meta: {
     alignItems: 'flex-end',
+    justifyContent: 'center',
   },
   time: {
     color: '#ccc',
@@ -81,6 +114,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 2,
     marginTop: 5,
+    minWidth: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   unreadText: {
     color: '#fff',

@@ -1,3 +1,4 @@
+// /app/home/search/id.tsx
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, View, Text, FlatList, StyleSheet, Dimensions, Image, Alert } from 'react-native';
 import { useLocalSearchParams, Stack } from 'expo-router';
@@ -11,8 +12,8 @@ const numColumns = 3;
 
 export default function ProfileScreen() {
   const { id, username } = useLocalSearchParams();
-  console.log('ProfileScreen id:', id); // Debugging
-  console.log('ProfileScreen username:', username); // Debugging
+  console.log('ProfileScreen id:', id);
+  console.log('ProfileScreen username:', username);
 
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -65,28 +66,23 @@ export default function ProfileScreen() {
 
   return (
     <>
-      {/* Set the header title dynamically */}
       <Stack.Screen
         options={{
-          title: username as string, // Use the username as the title
-          headerShown: true, // Ensure the header is visible
+          title: username as string,
+          headerShown: true,
         }}
       />
 
-<FlatList
-      ListHeaderComponent={<ProfileHeader profile={profile} />}
-      data={[]} // Replace with actual posts data if needed
-      renderItem={renderPost}
-      keyExtractor={(item, index) => index.toString()}
-      numColumns={numColumns}
-      contentContainerStyle={styles.grid}
-      ListEmptyComponent={EmptyPostsComponent}
-      style={styles.container}
-    />
-      <View>
-        <Text>Profile ID: {id}</Text>
-        <Text>Username: {username}</Text>
-      </View>
+      <FlatList
+        ListHeaderComponent={<ProfileHeader profile={profile} />}
+        data={[]}
+        renderItem={renderPost}
+        keyExtractor={(item, index) => index.toString()}
+        numColumns={numColumns}
+        contentContainerStyle={styles.grid}
+        ListEmptyComponent={EmptyPostsComponent}
+        style={styles.container}
+      />
     </>
   );
 }

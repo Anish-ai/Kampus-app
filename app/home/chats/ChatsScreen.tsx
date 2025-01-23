@@ -11,16 +11,13 @@ import {
   Image,
   PanResponder,
   PanResponderGestureState,
-  GestureResponderEvent
+  GestureResponderEvent,
 } from 'react-native';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import Allchats from '../../../src/ChatsScreens/AllChats';
-import Community from '../../../src/ChatsScreens/Community';
-import GroupChats from '../../../src/ChatsScreens/Groups';
+import Groups from '../../../src/ChatsScreens/Groups';
 import Status from '../../../src/ChatsScreens/Status';
-import { Link } from 'expo-router';
-import ChatDesign from '../../../components/ChatDesign';
-import * as Font from 'expo-font';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 
 const screenWidth = Dimensions.get('window').width;
@@ -29,26 +26,25 @@ const SWIPE_SPEED_THRESHOLD = 0.5;
 const GESTURE_DETECTION_DELAY = 10;
 
 const ChatsScreen = () => {
-  const [selectedTab, setSelectedTab] = useState<'Allchats' | 'Groups' | 'Community' | 'Status'>('Allchats');
+  const [selectedTab, setSelectedTab] = useState<'Allchats' | 'Groups' | 'Status'>('Allchats');
   const tabIndicatorPosition = useRef(new Animated.Value(0)).current;
   const slideAnimation = useRef(new Animated.Value(0)).current;
-  const tabWidth = screenWidth / 4;
+  const tabWidth = screenWidth / 3; // Updated for 3 tabs
 
   // Gesture tracking refs
   const gestureStartTime = useRef(0);
   const initialGestureState = useRef({ dx: 0, dy: 0 });
   const isHorizontalGesture = useRef(false);
 
-  const getTabIndex = (tab: 'Allchats' | 'Groups' | 'Community' | 'Status') => {
-    return tab === 'Allchats' ? 0 : tab === 'Groups' ? 1 : tab === 'Community' ? 2 : 3;
+  const getTabIndex = (tab: 'Allchats' | 'Groups' | 'Status') => {
+    return tab === 'Allchats' ? 0 : tab === 'Groups' ? 1 : 2;
   };
 
-  const getTabFromIndex = (index: number): 'Allchats' | 'Groups' | 'Community' | 'Status' => {
+  const getTabFromIndex = (index: number): 'Allchats' | 'Groups' | 'Status' => {
     switch (index) {
       case 0: return 'Allchats';
       case 1: return 'Groups';
-      case 2: return 'Community';
-      case 3: return 'Status';
+      case 2: return 'Status';
       default: return 'Allchats';
     }
   };
@@ -84,7 +80,7 @@ const ChatsScreen = () => {
       const currentOffset = -currentIndex * screenWidth;
       const proposedPosition = currentOffset + gestureState.dx;
       
-      const minPosition = -(screenWidth * 3); // Updated for 4 tabs (0-3)
+      const minPosition = -(screenWidth * 2); // Updated for 3 tabs (0-2)
       const maxPosition = 0;
       
       if (proposedPosition <= maxPosition && proposedPosition >= minPosition) {
@@ -106,7 +102,7 @@ const ChatsScreen = () => {
       if (Math.abs(dx) > SWIPE_THRESHOLD || Math.abs(vx) > SWIPE_SPEED_THRESHOLD) {
         if (dx > 0 && currentIndex > 0) {
           newIndex = currentIndex - 1;
-        } else if (dx < 0 && currentIndex < 3) { // Updated for 4 tabs
+        } else if (dx < 0 && currentIndex < 2) { // Updated for 3 tabs
           newIndex = currentIndex + 1;
         }
       }
@@ -120,7 +116,7 @@ const ChatsScreen = () => {
     },
   });
 
-  const handleTabChange = (tab: 'Allchats' | 'Groups' | 'Community' | 'Status') => {
+  const handleTabChange = (tab: 'Allchats' | 'Groups' | 'Status') => {
     const tabIndex = getTabIndex(tab);
     const toValue = -screenWidth * tabIndex;
 
@@ -160,10 +156,7 @@ const ChatsScreen = () => {
           <Allchats />
         </View>
         <View style={[styles.screen]}>
-          <GroupChats />
-        </View>
-        <View style={[styles.screen]}>
-          <Community />
+          <Groups />
         </View>
         <View style={[styles.screen]}>
           <Status />
@@ -178,9 +171,6 @@ const ChatsScreen = () => {
         <Image source={require('../../../assets/images/Kampus.png')} style={styles.kampus} />
         <View style={styles.headerIcons}>
           <Ionicons name="scan-outline" size={30} color="grey" />
-          {/* <Link href="/Profile">
-            <Ionicons name="person-circle-outline" size={32} color="grey" style={{ marginLeft: 20 }} />
-          </Link> */}
           <Ionicons name="person-circle-outline" size={32} color="grey" style={{ marginLeft: 20 }} />
         </View>
       </View>
@@ -198,9 +188,6 @@ const ChatsScreen = () => {
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleTabChange('Groups')} style={styles.tab}>
           <Text style={[styles.tabText, selectedTab === 'Groups' && styles.activeTabText]}>Groups</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleTabChange('Community')} style={styles.tab}>
-          <Text style={[styles.tabText, selectedTab === 'Community' && styles.activeTabText]}>Community</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleTabChange('Status')} style={styles.tab}>
           <Text style={[styles.tabText, selectedTab === 'Status' && styles.activeTabText]}>Status</Text>
@@ -266,7 +253,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    width: screenWidth * 4,
+    width: screenWidth * 3,
     flex: 1,
   },
   screen: {

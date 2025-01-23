@@ -1,3 +1,4 @@
+// /app/home/search/Search.tsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useAuth } from '../../context/auth';

@@ -10,7 +10,8 @@ import {
     Platform,
     ActivityIndicator,
     Alert,
-    ScrollView
+    ScrollView,
+    SafeAreaView
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/auth';
@@ -52,6 +53,7 @@ export default function Signup() {
     };
   
     return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#161622' }}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
         <ScrollView>
           <StatusBar style="light" />
@@ -148,6 +150,7 @@ export default function Signup() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      </SafeAreaView>
     );
   }
 

@@ -9,7 +9,8 @@ import {
   KeyboardAvoidingView, 
   Platform,
   ActivityIndicator,
-  Alert 
+  Alert,
+  SafeAreaView
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/auth';
@@ -55,6 +56,7 @@ export default function Login() {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#161622' }}>
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
       <View style={styles.contentContainer}>
         <View style={styles.headerContainer}>
@@ -111,6 +113,7 @@ export default function Login() {
         </View>
       </View>
     </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 

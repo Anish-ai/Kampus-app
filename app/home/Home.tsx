@@ -12,6 +12,7 @@ import {
   PanResponderGestureState,
   GestureResponderEvent
 } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import News from '../../src/HomeScreens/news';
 import Updates from '../../src/HomeScreens/updates';
@@ -173,7 +174,7 @@ const Home = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Image source={require('../../assets/images/Kampus.png')} style={styles.kampus} />
         <View style={styles.headerIcons}>
@@ -207,6 +208,7 @@ const Home = () => {
         {renderAllContent()}
       </View>
     </SafeAreaView>
+    
   );
 };
 

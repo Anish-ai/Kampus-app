@@ -1,4 +1,5 @@
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, SafeAreaView } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from './context/auth';
 import { StatusBar } from 'expo-status-bar';
@@ -31,7 +32,8 @@ export default function Index() {
   }
 
   return (
-    <View style={styles.container}>
+    <>
+      <View style={styles.container}>
       <StatusBar style="light" />
       <View style={styles.contentContainer}>
         <Text style={styles.title}>Welcome</Text>
@@ -54,6 +56,8 @@ export default function Index() {
         </View>
       </View>
     </View>
+    </>
+    
   );
 }
 

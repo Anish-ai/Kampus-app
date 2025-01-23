@@ -32,8 +32,8 @@ export default function RootLayout() {
     <AuthProvider>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack>
-          <Stack.Screen name="Chats" options={{ headerShown: false }} />
-          <Stack.Screen name="ChatScreen" options={{ headerShown: false }} />
+          <Stack.Screen name="ChatsScreen" options={{ headerShown: false }} />
+          <Stack.Screen name="[id]" options={{ headerShown: false }} />
         </Stack>
       </ThemeProvider>
     </AuthProvider>

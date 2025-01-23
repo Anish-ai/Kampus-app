@@ -1,11 +1,14 @@
 // components/ProfileHeader.tsx
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router'; // Import useRouter
 import { Ionicons } from '@expo/vector-icons';
+import { useAuth } from '../app/context/auth'; // Import useAuth
+import { createChat } from '../types/chats'; // Import createChat
 
 interface ProfileHeaderProps {
   profile: {
+    userId: string; // Add userId to the profile object
     headerImageUrl?: string;
     profileImageUrl?: string;
     uname?: string;
@@ -17,8 +20,24 @@ interface ProfileHeaderProps {
 }
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ profile }) => {
+  const router = useRouter();
+  const { user } = useAuth(); // Get the current user
+
+  const handleMessageButtonPress = async () => {
+    if (!user || !profile) return;
+
+    try {
+      // Create a chat
+      const chatId = await createChat([user.uid, profile.userId]); // Use profile.userId
+      router.push(`/home/chats/${chatId}`); // Navigate to the chat screen
+    } catch (error) {
+      console.error('Error creating chat:', error);
+    }
+  };
+
   return (
     <>
+      {/* Header Section */}
       <View style={styles.header}>
         <Image
           source={
@@ -52,10 +71,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ profile }) => {
         <Text style={styles.profileName}>{profile?.uname}</Text>
         <Text style={styles.profileHandle}>@{profile?.username}</Text>
 
-        <TouchableOpacity style={styles.editButton}>
-          <Link href="/profile/EditProfile">
-            <Text style={styles.editButtonText}>Edit Profile</Text>
-          </Link>
+        <TouchableOpacity style={styles.editButton} onPress={handleMessageButtonPress}>
+          <Text style={styles.editButtonText}>Message</Text>
         </TouchableOpacity>
 
         <Text style={styles.friendsCount}>{profile?.friends || 0} Friends</Text>
