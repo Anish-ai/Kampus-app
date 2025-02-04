@@ -2,7 +2,7 @@
 
 [![2ipPVmF.png](https://iili.io/2ipPVmF.png)](https://freeimage.host/) <!-- Add your logo here -->
 
-Kampus is a **college-focused social media app** designed to help students stay connected, share updates, and engage with their college community. It features news feeds, SOS alerts, event updates, user profiles, and real-time chat functionality.
+Kampus is a **college-focused social media app** designed to help students stay connected, share updates, and engage with their college community. It features news feeds, SOS alerts, event updates, user profiles, and real-time chat functionality. ***It is still under development***.
 
 ---
 
