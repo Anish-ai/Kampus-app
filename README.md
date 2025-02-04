@@ -123,17 +123,63 @@ We welcome contributions from the community! Here’s how you can get started:
 - Go to the original repository and click "New Pull Request".
 - Provide a clear description of your changes and link any related issues.
 
-### **Issue Labels**
+## **Issues**
 
-We welcome you to contribute and fix easy to medium issues in this project and as a learning project.
-**Easy to fix issues**:
-1. In //app/profile/EditProfile.tsx during editing profile, clicking on save profile will trigger uniqueness check on username which must be checked on changing the username only and during its checking it also considers your current username which results in an alert that username already exists. you have to fix that during checking the username, it should not consider your current username.
-2. When someone posts without an image, it should be just posted without an image but it has a text saying 'No Image'. Remove that text or say whole image container as there is no image
-3. During posting any image from gallery, there comes an intrface to crop the image from gallery which is set to a fixed ratio. change to a dynamic ratio. when the image is posted the ratio in posts is also fixed, change it to adjust with real image upto some extent.
-4. the profile image is not visible in personal chat screen on top. make it visible.
-5. The user profile image should also be shown on each post of that user.
-**Moderate Issues**:
-1. In posts section of profile, if the user has empty image-posts, it should not be rendered there but it is rendering with a blank grey color looking odd. remove that.
-2. add a more-vert option for each post to delete post.
-3. There is an issue when i am changing tab without actually clicking the tab. for example if i searched any user in search tab and click on that profile then click on 'Message' it will redirect to chatscreen of that user so the Chats tab will be active so it is shown 'bold' but the rectangle is still on search tab only. Fix that rectangle to also travel to Chats tab
-4. When I am going to someone's profile through search. The posts count is showing correct value but the corresponding posts are not being visible there. fix that.
+We welcome contributions to improve Kampus! Below is a list of open issues categorized by difficulty level. If you're interested in contributing, feel free to pick an issue and work on it. Make sure to follow the [contribution guidelines](#contributing) before submitting a pull request.
+
+---
+
+### **Easy Issues**
+
+These issues are ideal for beginners or those looking to get familiar with the codebase. They involve minor fixes or improvements.
+
+1. **EditProfile Username Uniqueness Check**  
+   - **Description**: In `app/profile/EditProfile.tsx`, the username uniqueness check is triggered even when the username hasn't changed. This results in an unnecessary alert stating that the username already exists.  
+   - **Expected Behavior**: The uniqueness check should only run when the username is modified, and it should exclude the current user's username from the check.  
+   - **Files to Modify**: `app/profile/EditProfile.tsx`.
+
+2. **Post Without Image Rendering**  
+   - **Description**: When a post is created without an image, the UI displays a placeholder text ("No Image") or an empty container, which looks inconsistent.  
+   - **Expected Behavior**: If a post has no image, the image container should not be rendered at all.  
+   - **Files to Modify**: `components/PostDesign.tsx`.
+
+3. **Dynamic Image Cropping Ratio**  
+   - **Description**: The image cropping interface currently uses a fixed aspect ratio, which limits flexibility. Additionally, the posted image retains a fixed ratio, which may distort the original image.  
+   - **Expected Behavior**: The cropping interface should allow dynamic ratios, and the posted image should maintain the original aspect ratio (within reasonable limits).  
+   - **Files to Modify**: `components/AddPost.tsx` and `components/PostDesign.tsx`.
+
+4. **Profile Image in Chat Screen**  
+   - **Description**: The user's profile image is not displayed in the personal chat screen header, making it less visually engaging.  
+   - **Expected Behavior**: The profile image of the user should be visible in the chat screen header.  
+   - **Files to Modify**: `components/ChatDesign.tsx`.
+
+5. **Profile Image on Posts**  
+   - **Description**: User profile images are not displayed on individual posts, making it harder to identify the author of a post.  
+   - **Expected Behavior**: Each post should display the profile image of the user who created it.  
+   - **Files to Modify**: `components/PostDesign.tsx`.
+
+---
+
+### **Moderate Issues**
+
+These issues require a deeper understanding of the codebase and may involve more complex logic or UI changes.
+
+1. **Empty Image Posts Rendering**  
+   - **Description**: In the profile's posts section, if a user has posts without images, a blank grey container is rendered, which looks inconsistent.  
+   - **Expected Behavior**: Posts without images should not render the image container at all.  
+   - **Files to Modify**: `app/profile/Profile.tsx`.
+
+2. **Post Deletion Option**  
+   - **Description**: Users currently cannot delete their own posts. Adding a "more-vert" (three-dot) menu option for post deletion would improve functionality.  
+   - **Expected Behavior**: Each post should have a "more-vert" menu with a "Delete Post" option.  
+   - **Files to Modify**: `components/PostDesign.tsx`.
+
+3. **Tab Navigation Indicator Misalignment**  
+   - **Description**: When navigating to a chat screen from a user's profile, the active tab indicator (rectangle) does not update correctly. The indicator remains on the previous tab (e.g., Search) even though the Chats tab is active.  
+   - **Expected Behavior**: The active tab indicator should align with the currently active tab.  
+   - **Files to Modify**: `components/CustomTabBar.tsx`.
+
+4. **Profile Posts Visibility Issue**  
+   - **Description**: When viewing a user's profile via the search tab, the post count is displayed correctly, but the corresponding posts are not visible.  
+   - **Expected Behavior**: All posts should be visible in the profile's posts section.  
+   - **Files to Modify**: `app/home/search/id.tsx`.
