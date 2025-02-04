@@ -129,6 +129,22 @@ We welcome contributions to improve Kampus! Below is a list of open issues categ
 
 ---
 
+### **Warnings**
+
+1. **Avoid Uploading Unnecessary Data**  
+   - Please ensure that you do not upload unnecessary images or data to the Firebase database during testing. We won't be responsible for any data loss if they went deleted.
+   - **Recommendation**: Use dummy data or less-sized images for testing purposes.
+
+2. **Use Your Own Firebase Project**  
+   - It is **highly recommended** to create your own Firebase project for testing. This ensures that you do not interfere with the production database and can experiment freely.  
+   - **Steps**:  
+     - Create a Firebase project at [Firebase Console](https://console.firebase.google.com/).  
+     - Add a web app to your Firebase project and copy the Firebase configuration.  
+     - Replace the Firebase configuration in `firebaseConfig.js` with your own credentials.  
+     - Use the `.env` file to securely store your Firebase credentials (see [Getting Started](#getting-started) for details).
+
+---
+
 ### **Easy Issues**
 
 These issues are ideal for beginners or those looking to get familiar with the codebase. They involve minor fixes or improvements.
