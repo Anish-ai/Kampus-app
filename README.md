@@ -124,3 +124,16 @@ We welcome contributions from the community! Here’s how you can get started:
 - Provide a clear description of your changes and link any related issues.
 
 ### **Issue Labels**
+
+We welcome you to contribute and fix easy to medium issues in this project and as a learning project.
+**Easy to fix issues**:
+1. In //app/profile/EditProfile.tsx during editing profile, clicking on save profile will trigger uniqueness check on username which must be checked on changing the username only and during its checking it also considers your current username which results in an alert that username already exists. you have to fix that during checking the username, it should not consider your current username.
+2. When someone posts without an image, it should be just posted without an image but it has a text saying 'No Image'. Remove that text or say whole image container as there is no image
+3. During posting any image from gallery, there comes an intrface to crop the image from gallery which is set to a fixed ratio. change to a dynamic ratio. when the image is posted the ratio in posts is also fixed, change it to adjust with real image upto some extent.
+4. the profile image is not visible in personal chat screen on top. make it visible.
+5. The user profile image should also be shown on each post of that user.
+**Moderate Issues**:
+1. In posts section of profile, if the user has empty image-posts, it should not be rendered there but it is rendering with a blank grey color looking odd. remove that.
+2. add a more-vert option for each post to delete post.
+3. There is an issue when i am changing tab without actually clicking the tab. for example if i searched any user in search tab and click on that profile then click on 'Message' it will redirect to chatscreen of that user so the Chats tab will be active so it is shown 'bold' but the rectangle is still on search tab only. Fix that rectangle to also travel to Chats tab
+4. When I am going to someone's profile through search. The posts count is showing correct value but the corresponding posts are not being visible there. fix that.
